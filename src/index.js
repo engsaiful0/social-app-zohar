@@ -11,13 +11,11 @@ import {  createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux';
 //reducer
 import {store} from './store'
-
 import { IndexRouters } from './router';
 import { SimpleRouter } from './router/simple-router';
 import { ChatRouter } from './router/chat-router';
 
 const router = createBrowserRouter([
-
   ...IndexRouters,
   ...SimpleRouter,
   ...ChatRouter

@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { getApiUrl, API_ENDPOINTS, API_KEY } from '../../../apiConfig';
 import { isMobile } from 'react-device-detect';
-import { geolocated } from 'react-geolocation';
+import { geolocated } from "react-geolocated";
 
 import 'swiper/swiper-bundle.min.css'
 import { toast } from 'react-toastify';
@@ -30,7 +30,7 @@ const SignUp = () => {
    // Function to handle retrieving the user's platform information
    const handlePlatform = () => {
       const userAgent = navigator.userAgent;
-      isMobile ? 'Mobile' : 'Desktop';
+     const isMobile= isMobile ? 'Mobile' : 'Desktop';
       setPlatform(isMobile);
    }
    // form validation rules 
@@ -98,7 +98,7 @@ const SignUp = () => {
    const onSubmit = (data) => {
       // e.preventDefault();
       const formDataObj = new FormData();
-      console.log(formDataObj);
+      console.log(FormData);
       formDataObj.append('api_key', API_KEY);
       formDataObj.append('first_name', formData.first_name);
       formDataObj.append('last_name', formData.last_name);

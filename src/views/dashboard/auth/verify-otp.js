@@ -16,6 +16,17 @@ ReactSession.setStoreType("localStorage");
 
 
 const VerifyOTP = () => {
+   const [inputValue, setInputValue] = useState('');
+   const maxLength = 6;
+ 
+   const handleInput = (e) => {
+     let { value } = e.target;
+     if (value.length <= maxLength) {
+       setInputValue(value);
+     }
+   };
+ 
+
    const navigate = useNavigate();
    const user_hash = ReactSession.get("user_hash");
    // let naviagte = useNavigate();
@@ -34,9 +45,7 @@ const VerifyOTP = () => {
 
    // form validation rules 
    const validationSchema = Yup.object().shape({
-      otp: Yup.string()
-         .min(6, 'OTP must be at least 6 characters')
-         .required('OTP is required'),
+      otp: Yup.string().length(6).required('OTP must be 6 characters long'),
    });
    const formOptions = { resolver: yupResolver(validationSchema) };
 
@@ -74,7 +83,7 @@ const VerifyOTP = () => {
             if (response.data.status == 200) {
                toast.success('OTP is verified successfully!', {
                   position: toast.POSITION.TOP_RIGHT
-               });            
+               });
                navigate('/auth/sign-in');; //To redirect to the user's login page
                setFormData({
                   api_key: '',
@@ -83,7 +92,7 @@ const VerifyOTP = () => {
                });//clear the form feild after data save
             }
             if (response.data.status == 500) {
-               toast.error('Fill all fields and try again later!', {
+               toast.error('OTP may be wrong!!! Try again later!', {
                   position: toast.POSITION.TOP_RIGHT
                });
             }
@@ -97,7 +106,7 @@ const VerifyOTP = () => {
    };
    return (
       <>
-      <ToastContainer />
+         <ToastContainer />
          <section className="sign-in-page">
             <div id="container-inside">
                <div id="circle-small"></div>
@@ -114,8 +123,11 @@ const VerifyOTP = () => {
                         <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
                            <Form.Group className="form-group">
                               <Form.Label>OTP</Form.Label>
-                              <Form.Control {...register('otp')} value={formData.otp} onChange={handleChange} type="text" className="mb-0" id="otp" name='otp' placeholder="Enter 6 digits OTP" />
+                              <Form.Control {...register('otp')} value={formData.otp} onInput={handleInput} maxLength={maxLength} onChange={handleChange} type="text" className="mb-0" id="otp" name='otp' placeholder="Enter 6 digits OTP" />
                               <div >{errors.otp?.message}</div>
+                              {inputValue.length > maxLength && (
+                                 <p style={{ color: 'red' }}>Exceeded the maximum allowed length of {maxLength}</p>
+                              )}
                            </Form.Group>
 
                            <div className="d-inline-block w-100">

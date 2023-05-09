@@ -1,9 +1,6 @@
-
 import { Row, Col, Container, Form, Button, Image } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom';
-import SwiperCore, { Navigation, Autoplay } from 'swiper';
 import axios from "axios";
-import { useCookies } from 'react-cookie';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
@@ -13,8 +10,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
 
 
-
-
 //img
 import logo from '../../../assets/images/logo-full.png'
 
@@ -22,7 +17,7 @@ import logo from '../../../assets/images/logo-full.png'
 
 const SignIn = () => {
 
-   let naviagte = useNavigate();
+   let navigate = useNavigate();
    const validateForm = async () => {
       try {
          await validationSchema.validate(formData, { abortEarly: false });
@@ -89,8 +84,7 @@ const SignIn = () => {
                   position: toast.POSITION.TOP_RIGHT
                });
                //Cookies.set('token', token);            
-               navigate('/auth/verify-otp');
-               ('/timeline'); //To redirect to the user's timeline page
+               navigate('/timeline'); //To redirect to the user's timeline page
                setFormData({
                   api_key: '',
                   email: '',

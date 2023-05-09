@@ -2,7 +2,6 @@
 import { Row, Col, Container, Form, Button, Image } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { useCookies } from 'react-cookie';
 
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,7 +9,7 @@ import * as Yup from 'yup';
 import { getApiUrl, API_ENDPOINTS, API_KEY } from '../../../apiConfig';
 
 
-import 'swiper/swiper-bundle.min.css'
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
@@ -22,7 +21,6 @@ ReactSession.setStoreType("localStorage");
 
 const SignUp = () => {
    const navigate = useNavigate();
-   // let navigate = useNavigate();
    const validateForm = async () => {
       try {
          await validationSchema.validate(formData, { abortEarly: false });
@@ -169,11 +167,7 @@ const SignUp = () => {
                });//clear the form feild after data save
                console.log(response.data.data.user_hash);
                ReactSession.set("user_hash", response.data.data.user_hash);
-
-
-               //naviagte.push('/auth/verify-otp')
                navigate('/auth/verify-otp');
-
             }
             if (response.data.status == 500) {
                toast.error('Fill all fields and try again later!', {

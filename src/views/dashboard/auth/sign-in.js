@@ -89,7 +89,8 @@ const SignIn = () => {
                   position: toast.POSITION.TOP_RIGHT
                });
                //Cookies.set('token', token);            
-               naviagte.push('/'); //To redirect to the user's timeline page
+               navigate('/auth/verify-otp');
+               ('/timeline'); //To redirect to the user's timeline page
                setFormData({
                   api_key: '',
                   email: '',
@@ -112,6 +113,7 @@ const SignIn = () => {
    };
    return (
       <>
+        <ToastContainer />
          <section className="sign-in-page">
             <div id="container-inside">
                <div id="circle-small"></div>
@@ -140,6 +142,7 @@ const SignIn = () => {
                            <div className="d-inline-block w-100">
                               <Button variant="primary" type="submit" className="float-end">Sign in</Button>
                            </div>
+                           
                            <div className="sign-info">
                               <span className="dark-color d-inline-block line-height-2">Don't have an account? <Link to="/auth/sign-up">Sign up</Link></span>
 

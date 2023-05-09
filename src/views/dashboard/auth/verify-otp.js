@@ -16,8 +16,8 @@ ReactSession.setStoreType("localStorage");
 
 
 const VerifyOTP = () => {
-   const navigate  = useNavigate();
-  const user_hash= ReactSession.get("user_hash");
+   const navigate = useNavigate();
+   const user_hash = ReactSession.get("user_hash");
    // let naviagte = useNavigate();
    const validateForm = async () => {
       try {
@@ -34,7 +34,7 @@ const VerifyOTP = () => {
 
    // form validation rules 
    const validationSchema = Yup.object().shape({
-         otp: Yup.string()
+      otp: Yup.string()
          .min(6, 'OTP must be at least 6 characters')
          .required('OTP is required'),
    });
@@ -58,7 +58,6 @@ const VerifyOTP = () => {
    }
    const [err, setErr] = useState(null);
    const onSubmit = (data) => {
-      // e.preventDefault();
       const formDataObj = new FormData();
       console.log(FormData);
       formDataObj.append('api_key', API_KEY);
@@ -75,8 +74,7 @@ const VerifyOTP = () => {
             if (response.data.status == 200) {
                toast.success('OTP is verified successfully!', {
                   position: toast.POSITION.TOP_RIGHT
-               });
-               //Cookies.set('token', token);            
+               });            
                navigate('/auth/sign-in');; //To redirect to the user's login page
                setFormData({
                   api_key: '',
@@ -99,6 +97,7 @@ const VerifyOTP = () => {
    };
    return (
       <>
+      <ToastContainer />
          <section className="sign-in-page">
             <div id="container-inside">
                <div id="circle-small"></div>
@@ -118,7 +117,7 @@ const VerifyOTP = () => {
                               <Form.Control {...register('otp')} value={formData.otp} onChange={handleChange} type="text" className="mb-0" id="otp" name='otp' placeholder="Enter 6 digits OTP" />
                               <div >{errors.otp?.message}</div>
                            </Form.Group>
-                          
+
                            <div className="d-inline-block w-100">
                               <Button variant="primary" type="submit" className="float-end">Verify OTP</Button>
                            </div>

@@ -1,6 +1,6 @@
 
-import { Row, Col, Container, Form, Button, Image } from 'react-bootstrap'
-import { Link, useNavigate } from 'react-router-dom'
+import { Row, Col, Container, Form, Button, Image } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
 
@@ -15,23 +15,26 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
+import { ReactSession } from 'react-client-session';
+ReactSession.setStoreType("localStorage");
 
 
 
 const SignUp = () => {
-   let naviagte = useNavigate();
+   const navigate = useNavigate();
+   // let navigate = useNavigate();
    const validateForm = async () => {
       try {
-        await validationSchema.validate(formData, { abortEarly: false });
-        setFormErrors({}); // clear any previous errors
+         await validationSchema.validate(formData, { abortEarly: false });
+         setFormErrors({}); // clear any previous errors
       } catch (err) {
-        const errors = {};
-        err.inner.forEach((error) => {
-          errors[error.path] = error.message;
-        });
-        setFormErrors(errors); // set the errors state to the validation errors
+         const errors = {};
+         err.inner.forEach((error) => {
+            errors[error.path] = error.message;
+         });
+         setFormErrors(errors); // set the errors state to the validation errors
       }
-    };
+   };
 
    const dayOptions = Array.from(Array(31).keys()).map((day) => {
       const value = moment().date(day + 1).format('DD');
@@ -115,7 +118,7 @@ const SignUp = () => {
       setFormData(prevState => ({ ...prevState, [name]: value }));
       validateForm();
    }
-  
+
    const [err, setErr] = useState(null);
    const platform = navigator.userAgent.match(/(Android|iPhone|iPod|iPad|Windows Phone|Tablet|Windows|Macintosh)/i)[0];
 
@@ -164,7 +167,13 @@ const SignUp = () => {
                   day: '',
                   termsAndConditions: false
                });//clear the form feild after data save
-              // naviagte.push()
+               console.log(response.data.data.user_hash);
+               ReactSession.set("user_hash", response.data.data.user_hash);
+
+
+               //naviagte.push('/auth/verify-otp')
+               navigate('/auth/verify-otp');
+
             }
             if (response.data.status == 500) {
                toast.error('Fill all fields and try again later!', {

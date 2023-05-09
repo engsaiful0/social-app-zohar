@@ -137,7 +137,7 @@ const SignUp = () => {
 
       try {
          axios({
-            url: getApiUrl(API_ENDPOINTS.SIGNUP),
+            url: getApiUrl(API_ENDPOINTS.REGISTER),
             method: 'POST',
             data: formDataObj
          }).then(function (response) {
@@ -155,7 +155,6 @@ const SignUp = () => {
                   gender: '',
                   password: '',
                   confirm_password: '',
-                  location: '',
                   location: '',
                   platform: '',
                   date_of_birth: '',

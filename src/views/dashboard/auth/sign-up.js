@@ -17,8 +17,9 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 
 
-const SignUp = () => {
 
+const SignUp = () => {
+   let naviagte = useNavigate();
    const validateForm = async () => {
       try {
         await validationSchema.validate(formData, { abortEarly: false });
@@ -163,6 +164,7 @@ const SignUp = () => {
                   day: '',
                   termsAndConditions: false
                });//clear the form feild after data save
+              // naviagte.push()
             }
             if (response.data.status == 500) {
                toast.error('Fill all fields and try again later!', {

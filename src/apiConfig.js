@@ -6,7 +6,7 @@ export const API_KEY = '311a5c4915683897f0bea2571aa2eca98398b33beb315b839e4270df
 export const API_ENDPOINTS = {
   SIGNIN: '/users/signin',
   SIGNUP: '/users/register',
-  PRODUCTS: '/products',
+ 
   // Add more endpoints as needed
 };
 

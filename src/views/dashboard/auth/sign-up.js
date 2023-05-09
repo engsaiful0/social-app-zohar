@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+
 import { Row, Col, Container, Form, Button, Image } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from "axios";
@@ -8,51 +8,81 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { getApiUrl, API_ENDPOINTS, API_KEY } from '../../../apiConfig';
-import { isMobile } from 'react-device-detect';
-import { geolocated } from "react-geolocated";
+
 
 import 'swiper/swiper-bundle.min.css'
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useEffect } from 'react';
+import moment from 'moment';
 
 
 const SignUp = () => {
-   const [location, setLocation] = useState(null);
-   const { coords } = this.props;
-   setLocation({
-      latitude: coords.latitude,
-      longitude: coords.longitude
+
+   const validateForm = async () => {
+      try {
+        await validationSchema.validate(formData, { abortEarly: false });
+        setFormErrors({}); // clear any previous errors
+      } catch (err) {
+        const errors = {};
+        err.inner.forEach((error) => {
+          errors[error.path] = error.message;
+        });
+        setFormErrors(errors); // set the errors state to the validation errors
+      }
+    };
+
+   const dayOptions = Array.from(Array(31).keys()).map((day) => {
+      const value = moment().date(day + 1).format('DD');
+      return <option key={day} value={value}>{day + 1}</option>;
    });
 
+   const yearOptions = Array.from(Array(80).keys()).map((year) => {
+      const value = moment().year() - year;
+      return <option key={year} value={value}>{value}</option>;
+   });
 
-   const [platform, setPlatform] = useState('');
+   const monthOptions = moment.months().map((month, index) => {
+      const value = moment().month(index).format('MM');
+      return <option key={month} value={value}>{month}</option>;
+   });
 
-   // Function to handle retrieving the user's platform information
-   const handlePlatform = () => {
-      const userAgent = navigator.userAgent;
-     const isMobile= isMobile ? 'Mobile' : 'Desktop';
-      setPlatform(isMobile);
-   }
+   const [latitude, setLatitude] = useState(null);
+   const [longitude, setLongitude] = useState(null);
+   const [error, setError] = useState(null);
+   useEffect(() => {
+      if (navigator.geolocation) {
+         navigator.geolocation.getCurrentPosition(
+            (position) => {
+               setLatitude(position.coords.latitude);
+               setLongitude(position.coords.longitude);
+            },
+            (error) => {
+               setError(error.message);
+            }
+         );
+      } else {
+         setError('Geolocation is not supported by your browser.');
+      }
+   }, []);
+
    // form validation rules 
    const validationSchema = Yup.object().shape({
       first_name: Yup.string()
          .required('First Name is required'),
       last_name: Yup.string()
          .required('Last Name is required'),
-      // dob: Yup.string()
-      //     .required('Date of Birth is required')
-      //     .matches(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/, 'Date of Birth must be a valid date in the format YYYY-MM-DD'),
       email: Yup.string()
          .required('Email is required')
          .email('Email is invalid'),
       password: Yup.string()
-         .min(8, 'Password must be at least 8 characters')
+         .min(6, 'Password must be at least 6 characters')
          .required('Password is required'),
       confirm_password: Yup.string()
          .oneOf([Yup.ref('confirm_password'), null], 'Password must be matched')
          .required('Confirm Password is required'),
-      //  termsAndConditions: Yup.bool()
-      //  .oneOf([true], 'Accept Terms & Conditions is required')
+      termsAndConditions: Yup.bool()
+         .oneOf([true], 'Accept Terms & Conditions is required')
    });
    const formOptions = { resolver: yupResolver(validationSchema) };
 
@@ -61,7 +91,7 @@ const SignUp = () => {
    const { errors } = formState;
 
    const [formData, setFormData] = useState({
-      api_key: API_KEY,
+      api_key: '',
       first_name: '',
       last_name: '',
       email: '',
@@ -71,29 +101,22 @@ const SignUp = () => {
       location: '',
       location: '',
       platform: '',
+      date_of_birth: '',
+      year: '',
+      month: '',
+      day: '',
       termsAndConditions: false
    });
-   const [formErrors, setFormErrors] = useState({
-      first_name: '',
-      last_name: '',
-      email: '',
-      gender: '',
-      password: '',
-      confirm_password: '',
-      termsAndConditions: '',
-      location: '',
-      platform: '',
-   });
+   const [formErrors, setFormErrors] = useState({});
 
    const handleChange = (e) => {
       const { name, value } = e.target;
       setFormData(prevState => ({ ...prevState, [name]: value }));
+      validateForm();
    }
-   useEffect(() => {
-
-   }, [formData]);
+  
    const [err, setErr] = useState(null);
-   
+   const platform = navigator.userAgent.match(/(Android|iPhone|iPod|iPad|Windows Phone|Tablet|Windows|Macintosh)/i)[0];
 
    const onSubmit = (data) => {
       // e.preventDefault();
@@ -106,8 +129,12 @@ const SignUp = () => {
       formDataObj.append('gender', formData.gender);
       formDataObj.append('password', formData.password);
       formDataObj.append('confirm_password', formData.confirm_password);
-      formDataObj.append('location', location);
+      formDataObj.append('location', latitude + ',' + longitude);
       formDataObj.append('platform', platform);
+      if (formData.year != '' && formData.month != '' && formData.day != '') {
+         formDataObj.append('date_of_birth', formData.year + '-' + formData.month + '-' + formData.day);
+      }
+
       try {
          axios({
             url: getApiUrl(API_ENDPOINTS.SIGNUP),
@@ -115,9 +142,33 @@ const SignUp = () => {
             data: formDataObj
          }).then(function (response) {
             //handle success
-            console.log(response.status);
-            if (response.status == 200) {
-               toast.success("Form data saved successfully!");
+            console.log(response.data.status);
+            if (response.data.status == 200) {
+               toast.success('Form data saved successfully!', {
+                  position: toast.POSITION.TOP_RIGHT
+               });
+               setFormData({
+                  api_key: '',
+                  first_name: '',
+                  last_name: '',
+                  email: '',
+                  gender: '',
+                  password: '',
+                  confirm_password: '',
+                  location: '',
+                  location: '',
+                  platform: '',
+                  date_of_birth: '',
+                  year: '',
+                  month: '',
+                  day: '',
+                  termsAndConditions: false
+               });//clear the form feild after data save
+            }
+            if (response.data.status == 500) {
+               toast.error('Fill all fields and try again later!', {
+                  position: toast.POSITION.TOP_RIGHT
+               });
             }
          }).catch(function (response) {
             //handle error
@@ -127,11 +178,9 @@ const SignUp = () => {
          setErr(err.response.data);
       }
    };
-
-
-
    return (
       <>
+         <ToastContainer />
          <section className="sign-in-page">
             <div id="container-inside">
                <div id="circle-small"></div>
@@ -149,17 +198,17 @@ const SignUp = () => {
                         <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
                            <Form.Group className="form-group">
                               <Form.Label>First Name</Form.Label>
-                              <Form.Control {...register('first_name')} onChange={handleChange} type="text" className="mb-0" name='first_name' id="first_name" placeholder="Your First Name" />
+                              <Form.Control {...register('first_name')} value={formData.first_name} onChange={handleChange} type="text" className="mb-0" name='first_name' id="first_name" placeholder="Your First Name" />
                               <div >{errors.first_name?.message}</div>
                            </Form.Group>
                            <Form.Group className="form-group">
                               <Form.Label>Last Name</Form.Label>
-                              <Form.Control {...register('last_name')} onChange={handleChange} type="text" className="mb-0" name='last_name' id="last_name" placeholder="Your Last Name" />
+                              <Form.Control {...register('last_name')} value={formData.last_name} onChange={handleChange} type="text" className="mb-0" name='last_name' id="last_name" placeholder="Your Last Name" />
                               <div >{errors.last_name?.message}</div>
                            </Form.Group>
                            <Form.Group className="form-group">
                               <Form.Label>Email address</Form.Label>
-                              <Form.Control {...register('email')} onChange={handleChange} type="email" className="mb-0" id="email" name='email' placeholder="Enter email" />
+                              <Form.Control {...register('email')} value={formData.email} onChange={handleChange} type="email" className="mb-0" id="email" name='email' placeholder="Enter email" />
                               <div >{errors.email?.message}</div>
                            </Form.Group>
                            <Form.Group className="form-group">
@@ -173,18 +222,58 @@ const SignUp = () => {
                               <div >{errors.gender?.message}</div>
                            </Form.Group>
                            <Form.Group className="form-group">
+                              <Form.Label htmlFor="gender">Date of Birth</Form.Label>
+                              <Row>
+                                 <Col>
+                                    <Form.Control
+                                       as="select"
+                                       name="year"
+                                       value={formData.year}
+                                       onChange={handleChange}
+                                    >
+                                       <option selected value="">Year</option>
+                                       {yearOptions}
+                                    </Form.Control>
+                                 </Col>
+                                 <Col>
+                                    <Form.Control
+                                       as="select"
+                                       name="month"
+                                       value={formData.month}
+                                       onChange={handleChange}
+                                    >
+                                       <option selected value="">Month</option>
+                                       {monthOptions}
+                                    </Form.Control>
+                                 </Col>
+                                 <Col>
+                                    <Form.Control
+                                       as="select"
+                                       name="day"
+                                       value={formData.day}
+                                       onChange={handleChange}
+                                    >
+                                       <option selected value="">Day</option>
+                                       {dayOptions}
+                                    </Form.Control>
+                                 </Col>
+                              </Row>
+                              <div >{errors.gender?.message}</div>
+                           </Form.Group>
+                           <Form.Group className="form-group">
                               <Form.Label>Password</Form.Label>
-                              <Form.Control {...register('password')} onChange={handleChange} {...register("password", { required: true })} type="password" className="mb-0" id="password" name='password' placeholder="Enter Password" />
+                              <Form.Control {...register('password')} value={formData.password} onChange={handleChange} type="password" className="mb-0" id="password" name='password' placeholder="Enter Password" />
                               <div >{errors.password?.message}</div>
                            </Form.Group>
                            <Form.Group className="form-group">
-                              <Form.Label>Confirm Password</Form.Label>
-                              <Form.Control onChange={handleChange} {...register('confirm_password')} type="password" className="mb-0" name='confirm_password' id="confirm_password" placeholder="Enter Confirm Password" />
+                              <Form.Label>Password</Form.Label>
+                              <Form.Control {...register('confirm_password')} value={formData.confirm_password} onChange={handleChange} type="password" className="mb-0" id="confirm_password" name='confirm_password' placeholder="Enter Confirm Password" />
                               <div >{errors.confirm_password?.message}</div>
                            </Form.Group>
+
                            <div className="d-inline-block w-100">
                               <Form.Check className="d-inline-block mt-2 pt-1">
-                                 <Form.Check.Input name="termsAndConditions" onChange={handleChange} checked={formData.termsAndConditions} type="checkbox" className="me-2" id="termsAndConditions" />
+                                 <Form.Check.Input name="termsAndConditions" {...register('termsAndConditions')} onChange={handleChange} checked={formData.termsAndConditions} type="checkbox" className="me-2" id="termsAndConditions" />
                                  <Form.Check.Label>I accept <Link to="#">Terms and Conditions</Link></Form.Check.Label>
                                  <div >{errors.termsAndConditions?.message}</div>
                               </Form.Check>

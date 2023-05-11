@@ -12,13 +12,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-
-
 const ResetPassword = () => {
 
-   toast.success(Cookies.get("notification"), {
-      position: toast.POSITION.TOP_RIGHT
-   });
+   // toast.success(Cookies.get("notification"), {
+   //    position: toast.POSITION.TOP_RIGHT
+   // });
    const [inputValue, setInputValue] = useState('');
    const maxLength = 6;
 
@@ -32,9 +30,6 @@ const ResetPassword = () => {
    const user_id = Cookies.get("user_id");
    // form validation rules 
    const validationSchema = Yup.object().shape({
-      email: Yup.string()
-         .required('Email is required')
-         .email('Email is invalid'),
       password: Yup.string()
          .min(6, 'Password must be at least 6 characters')
          .required('Password is required'),
@@ -44,9 +39,6 @@ const ResetPassword = () => {
       otp: Yup.string().length(6).required('OTP must be 6 characters long'),
    });
    const formOptions = { resolver: yupResolver(validationSchema) };
-
-
-
    // get functions to build form with useForm() hook
    const { register, handleSubmit, reset, formState } = useForm(formOptions);
    const { errors } = formState;
@@ -55,7 +47,6 @@ const ResetPassword = () => {
       api_key: '',
       user_id: '',
       otp: '',
-      email: '',
       password: '',
       confirm_password: '',
    });
@@ -85,7 +76,6 @@ const ResetPassword = () => {
       formDataObj.append('api_key', API_KEY);
       formDataObj.append('user_id', user_id);
       formDataObj.append('otp', formData.otp);
-      formDataObj.append('email', formData.email);
       formDataObj.append('password', formData.password);
       formDataObj.append('confirm_password', formData.confirm_password);
       try {
@@ -105,14 +95,13 @@ const ResetPassword = () => {
                   api_key: '',
                   user_id: '',
                   otp: '',
-                  email: '',
                   password: '',
                   confirm_password: '',
 
                });//clear the form feild after data save
             }
             if (response.data.status == 500) {
-               toast.error('OTP may be wrong!!! Try again later!', {
+               toast.error(response.data.message, {
                   position: toast.POSITION.TOP_RIGHT
                });
             }
@@ -142,11 +131,6 @@ const ResetPassword = () => {
                         <h1 className="mb-0">Reset Password</h1>
                         <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
                            <Form.Group className="form-group">
-                              <Form.Label>Email address</Form.Label>
-                              <Form.Control {...register('email')} value={formData.email} onChange={handleChange} type="email" className="mb-0" id="email" name='email' placeholder="Enter email" />
-                              <div >{errors.email?.message}</div>
-                           </Form.Group>
-                           <Form.Group className="form-group">
                               <Form.Label>OTP</Form.Label>
                               <Form.Control {...register('otp')} value={formData.otp} onInput={handleInput} maxLength={maxLength} onChange={handleChange} type="text" className="mb-0" id="otp" name='otp' placeholder="Enter 6 digits OTP" />
                               <div >{errors.otp?.message}</div>
@@ -160,7 +144,7 @@ const ResetPassword = () => {
                               <div >{errors.password?.message}</div>
                            </Form.Group>
                            <Form.Group className="form-group">
-                              <Form.Label>Password</Form.Label>
+                              <Form.Label>Confrim Password</Form.Label>
                               <Form.Control {...register('confirm_password')} value={formData.confirm_password} onChange={handleChange} type="password" className="mb-0" id="confirm_password" name='confirm_password' placeholder="Enter Confirm Password" />
                               <div >{errors.confirm_password?.message}</div>
                            </Form.Group>
@@ -169,7 +153,6 @@ const ResetPassword = () => {
                            </div>
                            <div className="sign-info">
                               <span className="dark-color d-inline-block line-height-2">Don't have an account? <Link to="/auth/sign-up">Sign up</Link></span>
-
                            </div>
                         </Form>
                      </div>

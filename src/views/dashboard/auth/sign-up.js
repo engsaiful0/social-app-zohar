@@ -146,7 +146,8 @@ const SignUp = () => {
             //handle success
             console.log(response.data.status);
             if (response.data.status == 200) {
-               toast.success('Form data saved successfully!', {
+               Cookies.set("notification", response.data.message);
+               toast.success(response.data.message, {
                   position: toast.POSITION.TOP_RIGHT
                });
                setFormData({
@@ -165,13 +166,12 @@ const SignUp = () => {
                   day: '',
                   termsAndConditions: false
                });//clear the form feild after data save
-               console.log(response.data.data.user_hash);
-               Cookies.set("user_hash", response.data.user.user_hash);
-      
+               console.log(response.data.user_hash);
+               Cookies.set("user_hash", response.data.user_hash);
                navigate('/auth/verify-otp');
             }
             if (response.data.status == 500) {
-               toast.error('Fill all fields and try again later!', {
+               toast.error(response.data.Errors[0], {
                   position: toast.POSITION.TOP_RIGHT
                });
             }

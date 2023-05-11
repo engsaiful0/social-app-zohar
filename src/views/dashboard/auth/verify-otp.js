@@ -15,6 +15,7 @@ import Cookies from 'js-cookie';
 
 
 const VerifyOTP = () => {
+   
    const [inputValue, setInputValue] = useState('');
    const maxLength = 6;
  

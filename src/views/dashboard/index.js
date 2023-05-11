@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { Row, Col, Container, Dropdown, OverlayTrigger, Tooltip, Modal } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
 import Card from '../../components/Card'
 import CustomToggle from '../../components/dropdowns'
 import ShareOffcanvas from '../../components/share-offcanvas'
-
+import { getApiUrl, API_ENDPOINTS, API_KEY } from '../../apiConfig';
+import { checkIfUserIsLoggedIn } from '../../checkIfUserIsLoggedIn';
+import { Link, useNavigate } from 'react-router-dom';
 //image
 import user1 from '../../assets/images/user/1.jpg'
 import user01 from '../../assets/images/user/01.jpg'
@@ -43,6 +45,17 @@ import loader from '../../assets/images/page-img/page-load-loader.gif'
 
 
 const Index = () => {
+    let navigate = useNavigate();
+    useEffect(() => {
+        // check if the user is logged in
+        const isLoggedIn = checkIfUserIsLoggedIn();
+        console.log(isLoggedIn);
+        // if the user is not logged in, redirect to the sign-in page
+        if (!isLoggedIn) {
+            navigate('/auth/sign-in');
+        }
+    }, [navigate]);
+
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -70,7 +83,7 @@ const Index = () => {
                                 </Col>
                             </Card.Body>
                         </Card>
-            </Row>
+                    </Row>
                     <Row>
                         <Col lg={8} className="row m-0 p-0">
                             <Col sm={12} >

@@ -7,6 +7,8 @@ export const API_ENDPOINTS = {
   REGISTER: '/users/register',
   AUTHENTICATE: '/users/authenticate',
   VERIFY_OTP: '/users/verify_otp',
+  RECOVER: '/users/recover',
+  RESETPASSWORD: '/users/setpassword',
 };
 
 export const getApiUrl = (endpoint) => `${BASE_URL}${endpoint}`;

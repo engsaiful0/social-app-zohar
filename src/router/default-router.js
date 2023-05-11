@@ -79,7 +79,10 @@ import BlankPage from "../views/dashboard/extrapages/blankpage";
 import Admin from "../views/dashboard/app/admin";
 
 export const DefaultRouter = [
-
+  {
+    path: "/",
+    element: <Index />,
+  },
   {
     path: "dashboard/app/profile",
     element: <UserProfile />,

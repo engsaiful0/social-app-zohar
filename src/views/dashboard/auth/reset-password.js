@@ -14,20 +14,58 @@ import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 
 
-const VerifyOTP = () => {
+const ResetPassword = () => {
+
+   toast.success(Cookies.get("notification"), {
+      position: toast.POSITION.TOP_RIGHT
+   });
    const [inputValue, setInputValue] = useState('');
    const maxLength = 6;
- 
+
    const handleInput = (e) => {
-     let { value } = e.target;
-     if (value.length <= maxLength) {
-       setInputValue(value);
-     }
+      let { value } = e.target;
+      if (value.length <= maxLength) {
+         setInputValue(value);
+      }
    };
- const user_hash=Cookies.get('user_hash');
-
    const navigate = useNavigate();
+   const user_id = Cookies.get("user_id");
+   // form validation rules 
+   const validationSchema = Yup.object().shape({
+      email: Yup.string()
+         .required('Email is required')
+         .email('Email is invalid'),
+      password: Yup.string()
+         .min(6, 'Password must be at least 6 characters')
+         .required('Password is required'),
+      confirm_password: Yup.string()
+         .oneOf([Yup.ref('confirm_password'), null], 'Password must be matched')
+         .required('Confirm Password is required'),
+      otp: Yup.string().length(6).required('OTP must be 6 characters long'),
+   });
+   const formOptions = { resolver: yupResolver(validationSchema) };
 
+
+
+   // get functions to build form with useForm() hook
+   const { register, handleSubmit, reset, formState } = useForm(formOptions);
+   const { errors } = formState;
+
+   const [formData, setFormData] = useState({
+      api_key: '',
+      user_id: '',
+      otp: '',
+      email: '',
+      password: '',
+      confirm_password: '',
+   });
+   const [formErrors, setFormErrors] = useState({});
+
+   const handleChange = (e) => {
+      const { name, value } = e.target;
+      setFormData(prevState => ({ ...prevState, [name]: value }));
+      validateForm();
+   }
    const validateForm = async () => {
       try {
          await validationSchema.validate(formData, { abortEarly: false });
@@ -40,53 +78,37 @@ const VerifyOTP = () => {
          setFormErrors(errors); // set the errors state to the validation errors
       }
    };
-
-   // form validation rules 
-   const validationSchema = Yup.object().shape({
-      otp: Yup.string().length(6).required('OTP must be 6 characters long'),
-   });
-   const formOptions = { resolver: yupResolver(validationSchema) };
-
-   // get functions to build form with useForm() hook
-   const { register, handleSubmit, reset, formState } = useForm(formOptions);
-   const { errors } = formState;
-
-   const [formData, setFormData] = useState({
-      api_key: '',
-      user_hash: '',
-      otp: '',
-   });
-   const [formErrors, setFormErrors] = useState({});
-
-   const handleChange = (e) => {
-      const { name, value } = e.target;
-      setFormData(prevState => ({ ...prevState, [name]: value }));
-      validateForm();
-   }
    const [err, setErr] = useState(null);
    const onSubmit = (data) => {
       const formDataObj = new FormData();
       console.log(FormData);
       formDataObj.append('api_key', API_KEY);
-      formDataObj.append('user_hash', user_hash);
+      formDataObj.append('user_id', user_id);
       formDataObj.append('otp', formData.otp);
+      formDataObj.append('email', formData.email);
+      formDataObj.append('password', formData.password);
+      formDataObj.append('confirm_password', formData.confirm_password);
       try {
          axios({
-            url: getApiUrl(API_ENDPOINTS.VERIFY_OTP),
+            url: getApiUrl(API_ENDPOINTS.RESETPASSWORD),
             method: 'POST',
             data: formDataObj
          }).then(function (response) {
             //handle success
             console.log(response.data.status);
             if (response.data.status == 200) {
-               toast.success('OTP is verified successfully!', {
+               toast.success(response.data.message, {
                   position: toast.POSITION.TOP_RIGHT
                });
                navigate('/auth/sign-in');; //To redirect to the user's login page
                setFormData({
                   api_key: '',
-                  user_hash: '',
+                  user_id: '',
                   otp: '',
+                  email: '',
+                  password: '',
+                  confirm_password: '',
+
                });//clear the form feild after data save
             }
             if (response.data.status == 500) {
@@ -117,8 +139,13 @@ const VerifyOTP = () => {
                <Row className="no-gutters">
                   <div className="bg-white pt-5 custom-sign-in-form pt-5 pb-lg-0 pb-5">
                      <div className="sign-in-from">
-                        <h1 className="mb-0">Verify OTP</h1>
+                        <h1 className="mb-0">Reset Password</h1>
                         <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+                           <Form.Group className="form-group">
+                              <Form.Label>Email address</Form.Label>
+                              <Form.Control {...register('email')} value={formData.email} onChange={handleChange} type="email" className="mb-0" id="email" name='email' placeholder="Enter email" />
+                              <div >{errors.email?.message}</div>
+                           </Form.Group>
                            <Form.Group className="form-group">
                               <Form.Label>OTP</Form.Label>
                               <Form.Control {...register('otp')} value={formData.otp} onInput={handleInput} maxLength={maxLength} onChange={handleChange} type="text" className="mb-0" id="otp" name='otp' placeholder="Enter 6 digits OTP" />
@@ -127,9 +154,18 @@ const VerifyOTP = () => {
                                  <p style={{ color: 'red' }}>Exceeded the maximum allowed length of {maxLength}</p>
                               )}
                            </Form.Group>
-
+                           <Form.Group className="form-group">
+                              <Form.Label>Password</Form.Label>
+                              <Form.Control {...register('password')} value={formData.password} onChange={handleChange} type="password" className="mb-0" id="password" name='password' placeholder="Enter Password" />
+                              <div >{errors.password?.message}</div>
+                           </Form.Group>
+                           <Form.Group className="form-group">
+                              <Form.Label>Password</Form.Label>
+                              <Form.Control {...register('confirm_password')} value={formData.confirm_password} onChange={handleChange} type="password" className="mb-0" id="confirm_password" name='confirm_password' placeholder="Enter Confirm Password" />
+                              <div >{errors.confirm_password?.message}</div>
+                           </Form.Group>
                            <div className="d-inline-block w-100">
-                              <Button variant="primary" type="submit" className="float-end">Verify OTP</Button>
+                              <Button variant="primary" type="submit" className="float-end">Reset Password</Button>
                            </div>
                            <div className="sign-info">
                               <span className="dark-color d-inline-block line-height-2">Don't have an account? <Link to="/auth/sign-up">Sign up</Link></span>
@@ -144,4 +180,4 @@ const VerifyOTP = () => {
       </>
    )
 }
-export default VerifyOTP
+export default ResetPassword

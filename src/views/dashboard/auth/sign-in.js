@@ -8,7 +8,7 @@ import { getApiUrl, API_ENDPOINTS, API_KEY } from '../../../apiConfig';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
-
+import Cookies from 'js-cookie';
 
 //img
 import logo from '../../../assets/images/logo-full.png'
@@ -16,7 +16,7 @@ import logo from '../../../assets/images/logo-full.png'
 
 
 const SignIn = () => {
-
+   //const history = useHistory();
    let navigate = useNavigate();
    const validateForm = async () => {
       try {
@@ -78,13 +78,18 @@ const SignIn = () => {
             data: formDataObj
          }).then(function (response) {
             //handle success
-            console.log(response.data.status);
+        
             if (response.data.status == 200) {
+               Cookies.set("user_id", response.data.user.user_id);
+               Cookies.set("token", response.data.user.token);
+               Cookies.set("first_name", response.data.user.first_name);
+               Cookies.set("last_name", response.data.user.last_name);
+               Cookies.set("email", response.data.user.email);
                toast.success('You have signed in successfully!', {
                   position: toast.POSITION.TOP_RIGHT
                });
                //Cookies.set('token', token);            
-               navigate('/timeline'); //To redirect to the user's timeline page
+               navigate('/'); //To redirect to the user's timeline page
                setFormData({
                   api_key: '',
                   email: '',
@@ -93,7 +98,7 @@ const SignIn = () => {
                });//clear the form feild after data save
             }
             if (response.data.status == 500) {
-               toast.error('Fill all fields and try again later!', {
+               toast.error(response.data.message, {
                   position: toast.POSITION.TOP_RIGHT
                });
             }

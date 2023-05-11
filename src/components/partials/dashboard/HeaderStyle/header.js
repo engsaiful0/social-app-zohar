@@ -9,6 +9,7 @@ import {
   Modal,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import Cookies from 'js-cookie';
 
 //image
 import user1 from "../../../../assets/images/user/1.jpg";
@@ -29,18 +30,29 @@ import user15 from "../../../../assets/images/page-img/02.jpg";
 import user16 from "../../../../assets/images/page-img/01.jpg";
 //Componets
 import CustomToggle from "../../../dropdowns";
+import { useNavigate } from 'react-router-dom';
 // import DropdownMenu from "react-bootstrap/esm/DropdownMenu";
 
+
 const Header = () => {
+  let navigate = useNavigate();
   const minisidebar = () => {
     document.getElementsByTagName("ASIDE")[0].classList.toggle("sidebar-mini");
   };
-
+  const handleLogout = async () => {
+    Cookies.remove("user_id");
+    Cookies.remove("token");
+    Cookies.remove("first_name");
+    Cookies.remove("last_name");
+    Cookies.remove("email");
+    navigate('/auth/sign-in');
+  }
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   return (
+
     <>
       <div className="iq-top-navbar">
         <Nav
@@ -50,7 +62,7 @@ const Header = () => {
         >
           <Container fluid className="navbar-inner">
             <div className="d-flex align-items-center gap-3  pb-2 pb-lg-0">
-             
+
               <Link
                 to="/"
                 className="d-flex align-items-center gap-2 iq-header-logo"
@@ -77,16 +89,16 @@ const Header = () => {
                 </h3>
               </Link>
               <Link
-              to="#"
-              className="sidebar-toggle"
-              data-toggle="sidebar"
-              data-active="true"
-              onClick={minisidebar}
-            >
-              <div className="icon material-symbols-outlined iq-burger-menu">
-                menu
-              </div>
-            </Link>
+                to="#"
+                className="sidebar-toggle"
+                data-toggle="sidebar"
+                data-active="true"
+                onClick={minisidebar}
+              >
+                <div className="icon material-symbols-outlined iq-burger-menu">
+                  menu
+                </div>
+              </Link>
             </div>
 
             <div className="iq-search-bar device-search  position-relative">
@@ -511,420 +523,420 @@ const Header = () => {
                 </Link>
               </Nav.Item>
               <Nav.Item as="li" className="d-lg-none">
-              <div className="iq-search-bar device-search  position-relative">
-              <form
-                action="#"
-                className="searchbox"
-                onClick={handleShow}
-                data-bs-toggle="modal"
-                data-bs-target="#exampleModalFullscreenSm"
-              >
-                <Link className="search-link d-none d-lg-block" to="/">
-                  <span className="material-symbols-outlined">search</span>
-                </Link>
-                <Form.Control
-                  type="text"
-                  className="text search-input form-control bg-soft-primary  d-none d-lg-block"
-                  placeholder="Search here..."
-                />
-                <Link
-                  className="d-lg-none d-flex"
-                  to="/"
-                  onClick={handleShow}
-                  data-bs-toggle="modal"
-                  data-bs-target="#exampleModalFullscreenSm"
-                >
-                  <span className="material-symbols-outlined">search</span>
-                </Link>
-              </form>
+                <div className="iq-search-bar device-search  position-relative">
+                  <form
+                    action="#"
+                    className="searchbox"
+                    onClick={handleShow}
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModalFullscreenSm"
+                  >
+                    <Link className="search-link d-none d-lg-block" to="/">
+                      <span className="material-symbols-outlined">search</span>
+                    </Link>
+                    <Form.Control
+                      type="text"
+                      className="text search-input form-control bg-soft-primary  d-none d-lg-block"
+                      placeholder="Search here..."
+                    />
+                    <Link
+                      className="d-lg-none d-flex"
+                      to="/"
+                      onClick={handleShow}
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModalFullscreenSm"
+                    >
+                      <span className="material-symbols-outlined">search</span>
+                    </Link>
+                  </form>
 
-              <Modal
-                show={show}
-                onHide={handleClose}
-                className="search-modal"
-                id="post-modal"
-              >
-                <div className="modal-dialog modal-fullscreen-lg-down m-0">
-                  
-                  <Modal.Header className="py-2">
-                    <div className="d-flex align-items-center justify-content-between d-lg-none w-100">
-                      <form
-                        action="#"
-                        className="searchbox w-50"
-                        data-bs-toggle="modal"
-                        data-bs-target="#exampleModalFullscreenSm"
-                        onClick={handleShow}
-                      >
-                        <Link className="search-link" to="/">
-                          <span className="material-symbols-outlined">
-                            search
-                          </span>
-                        </Link>
+                  <Modal
+                    show={show}
+                    onHide={handleClose}
+                    className="search-modal"
+                    id="post-modal"
+                  >
+                    <div className="modal-dialog modal-fullscreen-lg-down m-0">
 
-                        <Form.Control
-                          type="text"
-                          className="text search-input bg-soft-primary"
-                          placeholder="Search here..."
-                        />
-                      </form>
+                      <Modal.Header className="py-2">
+                        <div className="d-flex align-items-center justify-content-between d-lg-none w-100">
+                          <form
+                            action="#"
+                            className="searchbox w-50"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModalFullscreenSm"
+                            onClick={handleShow}
+                          >
+                            <Link className="search-link" to="/">
+                              <span className="material-symbols-outlined">
+                                search
+                              </span>
+                            </Link>
 
-                      <Link
-                        to="/"
-                        className="material-symbols-outlined text-dark"
-                        onClick={handleClose}
-                      >
-                        close
-                      </Link>
-                    </div>
-                    {/* <Modal.Title> */}
-                    <div className="d-flex align-items-center justify-content-between ms-auto w-100">
-                      <h5 className=" h4" id="exampleModalFullscreenLabel">
-                        Recent
-                      </h5>
+                            <Form.Control
+                              type="text"
+                              className="text search-input bg-soft-primary"
+                              placeholder="Search here..."
+                            />
+                          </form>
 
-                      <Link to="/" className="text-dark">
-                        Clear All
-                      </Link>
-                    </div>
-                    {/* </Modal.Title> */}
-                  </Modal.Header>
-                  <Modal.Body className="p-0">
-                    <div className="d-flex d-lg-none align-items-center justify-content-between w-100 p-3 pb-0">
-                      <h5 className=" h4" id="exampleModalFullscreenLabel">
-                        Recent
-                      </h5>
+                          <Link
+                            to="/"
+                            className="material-symbols-outlined text-dark"
+                            onClick={handleClose}
+                          >
+                            close
+                          </Link>
+                        </div>
+                        {/* <Modal.Title> */}
+                        <div className="d-flex align-items-center justify-content-between ms-auto w-100">
+                          <h5 className=" h4" id="exampleModalFullscreenLabel">
+                            Recent
+                          </h5>
 
-                      <Link to="/" className="text-dark">
-                        Clear All
-                      </Link>
-                    </div>
-                    <div className="d-flex align-items-center border-bottom search-hover py-2 px-3">
-                      <div className="flex-shrink-0">
-                        <Image
-                          className="align-self-center img-fluid avatar-50 rounded-pill"
-                          src={user6}
-                          alt=""
-                          loading="lazy"
-                        />
-                      </div>
+                          <Link to="/" className="text-dark">
+                            Clear All
+                          </Link>
+                        </div>
+                        {/* </Modal.Title> */}
+                      </Modal.Header>
+                      <Modal.Body className="p-0">
+                        <div className="d-flex d-lg-none align-items-center justify-content-between w-100 p-3 pb-0">
+                          <h5 className=" h4" id="exampleModalFullscreenLabel">
+                            Recent
+                          </h5>
 
-                      <div className="d-flex flex-column ms-3">
-                        <Link to="/" className="h5">
-                          Paige Turner
-                        </Link>
-
-                        <span>Paige001</span>
-                      </div>
-
-                      <div className="d-flex align-items-center ms-auto">
-                        <Link to="/" className="me-3 d-flex align-items-center">
-                          <small>Follow</small>{" "}
-                        </Link>
-
-                        <Link
-                          to="/"
-                          className="material-symbols-outlined text-dark"
-                        >
-                          close
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-center border-bottom search-hover py-2 px-3">
-                      <div className="flex-shrink-0">
-                        <Image
-                          className="align-self-center img-fluid avatar-50 rounded-pill"
-                          src={user7}
-                          alt=""
-                          loading="lazy"
-                        />
-                      </div>
-
-                      <div className="d-flex flex-column ms-3">
-                        <Link to="/" className="h5">
-                          Monty Carlo
-                        </Link>
-
-                        <span>Carlo.m</span>
-                      </div>
-
-                      <div className="d-flex align-items-center ms-auto">
-                        <Link to="/" className="me-3 d-flex align-items-center">
-                          <small>Unfollow</small>{" "}
-                        </Link>
-
-                        <Link
-                          to="/"
-                          className="material-symbols-outlined text-dark"
-                        >
-                          close
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-center search-hover py-2 px-3 border-bottom">
-                      <div className="flex-shrink-0">
-                        <Image
-                          className="align-self-center img-fluid avatar-50 rounded-pill"
-                          src={user8}
-                          alt=""
-                          loading="lazy"
-                        />
-                      </div>
-
-                      <div className="d-flex flex-column ms-3">
-                        <Link to="/" className="h5">
-                          Paul Molive
-                        </Link>
-
-                        <span>Paul.45</span>
-                      </div>
-
-                      <div className="d-flex align-items-center ms-auto">
-                        <Link to="/" className="me-3 d-flex align-items-center">
-                          <small>Request</small>{" "}
-                        </Link>
-
-                        <Link
-                          to="/"
-                          className="material-symbols-outlined text-dark"
-                        >
-                          close
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="">
-                      <h4 className="px-3 py-2">Suggestions</h4>
-
-                      <div className="suggestion-card px-3 d-flex">
-                        <div className="text-center story">
-                          <div className="story-profile">
+                          <Link to="/" className="text-dark">
+                            Clear All
+                          </Link>
+                        </div>
+                        <div className="d-flex align-items-center border-bottom search-hover py-2 px-3">
+                          <div className="flex-shrink-0">
                             <Image
-                              className="avatar-50 rounded-pill"
+                              className="align-self-center img-fluid avatar-50 rounded-pill"
+                              src={user6}
+                              alt=""
+                              loading="lazy"
+                            />
+                          </div>
+
+                          <div className="d-flex flex-column ms-3">
+                            <Link to="/" className="h5">
+                              Paige Turner
+                            </Link>
+
+                            <span>Paige001</span>
+                          </div>
+
+                          <div className="d-flex align-items-center ms-auto">
+                            <Link to="/" className="me-3 d-flex align-items-center">
+                              <small>Follow</small>{" "}
+                            </Link>
+
+                            <Link
+                              to="/"
+                              className="material-symbols-outlined text-dark"
+                            >
+                              close
+                            </Link>
+                          </div>
+                        </div>
+                        <div className="d-flex align-items-center border-bottom search-hover py-2 px-3">
+                          <div className="flex-shrink-0">
+                            <Image
+                              className="align-self-center img-fluid avatar-50 rounded-pill"
+                              src={user7}
+                              alt=""
+                              loading="lazy"
+                            />
+                          </div>
+
+                          <div className="d-flex flex-column ms-3">
+                            <Link to="/" className="h5">
+                              Monty Carlo
+                            </Link>
+
+                            <span>Carlo.m</span>
+                          </div>
+
+                          <div className="d-flex align-items-center ms-auto">
+                            <Link to="/" className="me-3 d-flex align-items-center">
+                              <small>Unfollow</small>{" "}
+                            </Link>
+
+                            <Link
+                              to="/"
+                              className="material-symbols-outlined text-dark"
+                            >
+                              close
+                            </Link>
+                          </div>
+                        </div>
+                        <div className="d-flex align-items-center search-hover py-2 px-3 border-bottom">
+                          <div className="flex-shrink-0">
+                            <Image
+                              className="align-self-center img-fluid avatar-50 rounded-pill"
                               src={user8}
                               alt=""
                               loading="lazy"
                             />
+                          </div>
+
+                          <div className="d-flex flex-column ms-3">
+                            <Link to="/" className="h5">
+                              Paul Molive
+                            </Link>
+
+                            <span>Paul.45</span>
+                          </div>
+
+                          <div className="d-flex align-items-center ms-auto">
+                            <Link to="/" className="me-3 d-flex align-items-center">
+                              <small>Request</small>{" "}
+                            </Link>
 
                             <Link
                               to="/"
-                              className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
+                              className="material-symbols-outlined text-dark"
                             >
-                              Ammy Paul
+                              close
                             </Link>
                           </div>
-
-                          <Link
-                            to="/"
-                            className="d-lg-none align-items-center d-flex"
-                          >
-                            <small>Follow</small>{" "}
-                          </Link>
                         </div>
+                        <div className="">
+                          <h4 className="px-3 py-2">Suggestions</h4>
 
-                        <div className="text-center story">
-                          <div className="story-profile">
-                            <Image
-                              className="avatar-50 rounded-pill"
-                              src={user9}
-                              alt=""
-                              loading="lazy"
-                            />
+                          <div className="suggestion-card px-3 d-flex">
+                            <div className="text-center story">
+                              <div className="story-profile">
+                                <Image
+                                  className="avatar-50 rounded-pill"
+                                  src={user8}
+                                  alt=""
+                                  loading="lazy"
+                                />
 
-                            <Link
-                              to="/"
-                              className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
-                            >
-                              Roger Carlo
-                            </Link>
+                                <Link
+                                  to="/"
+                                  className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
+                                >
+                                  Ammy Paul
+                                </Link>
+                              </div>
+
+                              <Link
+                                to="/"
+                                className="d-lg-none align-items-center d-flex"
+                              >
+                                <small>Follow</small>{" "}
+                              </Link>
+                            </div>
+
+                            <div className="text-center story">
+                              <div className="story-profile">
+                                <Image
+                                  className="avatar-50 rounded-pill"
+                                  src={user9}
+                                  alt=""
+                                  loading="lazy"
+                                />
+
+                                <Link
+                                  to="/"
+                                  className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
+                                >
+                                  Roger Carlo
+                                </Link>
+                              </div>
+
+                              <Link
+                                to="/"
+                                className="d-lg-none align-items-center d-flex"
+                              >
+                                <small>Unfollow</small>{" "}
+                              </Link>
+                            </div>
+
+                            <div className="text-center story ">
+                              <div className="story-profile">
+                                <Image
+                                  className="avatar-50 rounded-pill"
+                                  src={user10}
+                                  alt=""
+                                  loading="lazy"
+                                />
+
+                                <Link
+                                  to="/"
+                                  className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
+                                >
+                                  Justin Molive
+                                </Link>
+                              </div>
+
+                              <Link
+                                to="/"
+                                className="d-lg-none align-items-center d-flex"
+                              >
+                                <small>Follow</small>{" "}
+                              </Link>
+                            </div>
+
+                            <div className="text-center story">
+                              <div className="story-profile ">
+                                <Image
+                                  className="avatar-50 rounded-pill"
+                                  src={user11}
+                                  alt=""
+                                  loading="lazy"
+                                />
+
+                                <Link
+                                  to="/"
+                                  className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
+                                >
+                                  Roy Fisher
+                                </Link>
+                              </div>
+
+                              <Link
+                                to="/"
+                                className="d-lg-none align-items-center d-flex"
+                              >
+                                <small>Request</small>{" "}
+                              </Link>
+                            </div>
+
+                            <div className="text-center story">
+                              <div className="story-profile">
+                                <Image
+                                  className="avatar-50 rounded-pill"
+                                  src={user12}
+                                  alt=""
+                                  loading="lazy"
+                                />
+
+                                <Link
+                                  to="/"
+                                  className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
+                                >
+                                  Johan Carlo
+                                </Link>
+                              </div>
+
+                              <Link
+                                to="/"
+                                className="d-lg-none align-items-center d-flex"
+                              >
+                                <small>Follow</small>{" "}
+                              </Link>
+                            </div>
+
+                            <div className="text-center story">
+                              <div className="story-profile">
+                                <Image
+                                  className="avatar-50 rounded-pill"
+                                  src={user13}
+                                  alt=""
+                                  loading="lazy"
+                                />
+
+                                <Link
+                                  to="/"
+                                  className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
+                                >
+                                  MedrLink Miles
+                                </Link>
+                              </div>
+
+                              <Link
+                                to="/"
+                                className="d-lg-none align-items-center d-flex"
+                              >
+                                <small>Unfollow</small>{" "}
+                              </Link>
+                            </div>
+
+                            <div className="text-center story">
+                              <div className="story-profile">
+                                <Image
+                                  className="avatar-50 rounded-pill"
+                                  src={user14}
+                                  alt=""
+                                  loading="lazy"
+                                />
+
+                                <Link
+                                  to="/"
+                                  className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
+                                >
+                                  Aohan Paul
+                                </Link>
+                              </div>
+
+                              <Link
+                                to="/"
+                                className="d-lg-none align-items-center d-flex"
+                              >
+                                <small>Request</small>{" "}
+                              </Link>
+                            </div>
+
+                            <div className="text-center story">
+                              <div className="story-profile">
+                                <Image
+                                  className="avatar-50 rounded-pill"
+                                  src={user15}
+                                  alt=""
+                                  loading="lazy"
+                                />
+
+                                <Link
+                                  to="/"
+                                  className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
+                                >
+                                  Rokni Joy
+                                </Link>
+                              </div>
+
+                              <Link
+                                to="/"
+                                className="d-lg-none align-items-center d-flex"
+                              >
+                                <small>Follow</small>{" "}
+                              </Link>
+                            </div>
+
+                            <div className="text-center story">
+                              <div className="story-profile">
+                                <Image
+                                  className="avatar-50 rounded-pill"
+                                  src={user16}
+                                  alt=""
+                                  loading="lazy"
+                                />
+
+                                <Link
+                                  to="/"
+                                  className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
+                                >
+                                  Sepid Ryan
+                                </Link>
+                              </div>
+
+                              <Link
+                                to="/"
+                                className="d-lg-none align-items-center d-flex"
+                              >
+                                <small>Unfollow</small>{" "}
+                              </Link>
+                            </div>
                           </div>
-
-                          <Link
-                            to="/"
-                            className="d-lg-none align-items-center d-flex"
-                          >
-                            <small>Unfollow</small>{" "}
-                          </Link>
                         </div>
-
-                        <div className="text-center story ">
-                          <div className="story-profile">
-                            <Image
-                              className="avatar-50 rounded-pill"
-                              src={user10}
-                              alt=""
-                              loading="lazy"
-                            />
-
-                            <Link
-                              to="/"
-                              className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
-                            >
-                              Justin Molive
-                            </Link>
-                          </div>
-
-                          <Link
-                            to="/"
-                            className="d-lg-none align-items-center d-flex"
-                          >
-                            <small>Follow</small>{" "}
-                          </Link>
-                        </div>
-
-                        <div className="text-center story">
-                          <div className="story-profile ">
-                            <Image
-                              className="avatar-50 rounded-pill"
-                              src={user11}
-                              alt=""
-                              loading="lazy"
-                            />
-
-                            <Link
-                              to="/"
-                              className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
-                            >
-                              Roy Fisher
-                            </Link>
-                          </div>
-
-                          <Link
-                            to="/"
-                            className="d-lg-none align-items-center d-flex"
-                          >
-                            <small>Request</small>{" "}
-                          </Link>
-                        </div>
-
-                        <div className="text-center story">
-                          <div className="story-profile">
-                            <Image
-                              className="avatar-50 rounded-pill"
-                              src={user12}
-                              alt=""
-                              loading="lazy"
-                            />
-
-                            <Link
-                              to="/"
-                              className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
-                            >
-                              Johan Carlo
-                            </Link>
-                          </div>
-
-                          <Link
-                            to="/"
-                            className="d-lg-none align-items-center d-flex"
-                          >
-                            <small>Follow</small>{" "}
-                          </Link>
-                        </div>
-
-                        <div className="text-center story">
-                          <div className="story-profile">
-                            <Image
-                              className="avatar-50 rounded-pill"
-                              src={user13}
-                              alt=""
-                              loading="lazy"
-                            />
-
-                            <Link
-                              to="/"
-                              className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
-                            >
-                              MedrLink Miles
-                            </Link>
-                          </div>
-
-                          <Link
-                            to="/"
-                            className="d-lg-none align-items-center d-flex"
-                          >
-                            <small>Unfollow</small>{" "}
-                          </Link>
-                        </div>
-
-                        <div className="text-center story">
-                          <div className="story-profile">
-                            <Image
-                              className="avatar-50 rounded-pill"
-                              src={user14}
-                              alt=""
-                              loading="lazy"
-                            />
-
-                            <Link
-                              to="/"
-                              className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
-                            >
-                              Aohan Paul
-                            </Link>
-                          </div>
-
-                          <Link
-                            to="/"
-                            className="d-lg-none align-items-center d-flex"
-                          >
-                            <small>Request</small>{" "}
-                          </Link>
-                        </div>
-
-                        <div className="text-center story">
-                          <div className="story-profile">
-                            <Image
-                              className="avatar-50 rounded-pill"
-                              src={user15}
-                              alt=""
-                              loading="lazy"
-                            />
-
-                            <Link
-                              to="/"
-                              className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
-                            >
-                              Rokni Joy
-                            </Link>
-                          </div>
-
-                          <Link
-                            to="/"
-                            className="d-lg-none align-items-center d-flex"
-                          >
-                            <small>Follow</small>{" "}
-                          </Link>
-                        </div>
-
-                        <div className="text-center story">
-                          <div className="story-profile">
-                            <Image
-                              className="avatar-50 rounded-pill"
-                              src={user16}
-                              alt=""
-                              loading="lazy"
-                            />
-
-                            <Link
-                              to="/"
-                              className="h6 mt-0 mt-lg-2 ms-3 ms-lg-0 text-ellipsis short-2 small"
-                            >
-                              Sepid Ryan
-                            </Link>
-                          </div>
-
-                          <Link
-                            to="/"
-                            className="d-lg-none align-items-center d-flex"
-                          >
-                            <small>Unfollow</small>{" "}
-                          </Link>
-                        </div>
-                      </div>
+                      </Modal.Body>
                     </div>
-                  </Modal.Body>
+                  </Modal>
                 </div>
-              </Modal>
-            </div>
               </Nav.Item>
               <Dropdown as="li" className="nav-item">
                 <Dropdown.Toggle
@@ -1179,9 +1191,9 @@ const Header = () => {
                 </Dropdown.Menu>
               </Dropdown>
               <Dropdown as="li" className="nav-item">
-        
-              
-            </Dropdown>
+
+
+              </Dropdown>
               <Nav.Item className="nav-item d-none d-lg-none">
                 <Link
                   to="#"
@@ -1208,14 +1220,14 @@ const Header = () => {
                     loading="lazy"
                   />
                   <div className="caption d-none d-lg-block">
-                    <h6 className="mb-0 line-height">Bni Cyst</h6>
+                    <h6 className="mb-0 line-height"><b>{Cookies.get('first_name')}</b></h6>
                   </div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="sub-drop caption-menu">
                   <Card className="shadow-none m-0">
                     <Card.Header>
                       <div className="header-title">
-                        <h5 className="mb-0 ">Hello Bni Cyst</h5>
+                        <h5 className="mb-0 ">Hello, <b>{Cookies.get('first_name')}</b></h5>
                       </div>
                     </Card.Header>
                     <Card.Body className="p-0 ">
@@ -1266,7 +1278,7 @@ const Header = () => {
                       <div className="d-flex align-items-center iq-sub-card">
                         <span className="material-symbols-outlined">login</span>
                         <div className="ms-3">
-                          <Link to="/auth/sign-in" className="mb-0 h6">
+                          <Link onClick={handleLogout} to="#" className="mb-0 h6">
                             Sign out
                           </Link>
                         </div>

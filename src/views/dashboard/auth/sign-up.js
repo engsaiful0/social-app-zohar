@@ -14,8 +14,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
-import { ReactSession } from 'react-client-session';
-ReactSession.setStoreType("localStorage");
+import Cookies from 'js-cookie';
+
 
 
 
@@ -166,7 +166,8 @@ const SignUp = () => {
                   termsAndConditions: false
                });//clear the form feild after data save
                console.log(response.data.data.user_hash);
-               ReactSession.set("user_hash", response.data.data.user_hash);
+               Cookies.set("user_hash", response.data.user.user_hash);
+      
                navigate('/auth/verify-otp');
             }
             if (response.data.status == 500) {

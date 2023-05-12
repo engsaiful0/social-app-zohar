@@ -7,6 +7,9 @@ import ShareOffcanvas from '../../components/share-offcanvas'
 import { getApiUrl, API_ENDPOINTS, API_KEY } from '../../apiConfig';
 import { checkIfUserIsLoggedIn } from '../../checkIfUserIsLoggedIn';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from "axios";
+import Cookies from 'js-cookie';
+
 //image
 import user1 from '../../assets/images/user/1.jpg'
 import user01 from '../../assets/images/user/01.jpg'
@@ -45,6 +48,8 @@ import loader from '../../assets/images/page-img/page-load-loader.gif'
 
 
 const Index = () => {
+
+    const token = Cookies.get("token");
     let navigate = useNavigate();
     useEffect(() => {
         // check if the user is logged in
@@ -59,6 +64,8 @@ const Index = () => {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    
 
     return (
         <>

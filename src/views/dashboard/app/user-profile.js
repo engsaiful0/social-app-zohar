@@ -1,10 +1,14 @@
-import React,{useState} from 'react'
-import {Row, Col, Container, Dropdown, Nav, Tab, OverlayTrigger, Tooltip, Button, Modal } from 'react-bootstrap'
+import React, { useEffect, useState } from 'react';
+import { Row, Col, Container, Dropdown, Nav, Tab, OverlayTrigger, Tooltip, Button, Modal } from 'react-bootstrap'
 import Card from '../../../components/Card'
 import CustomToggle from '../../../components/dropdowns'
 import ShareOffcanvas from '../../../components/share-offcanvas'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import axios from "axios";
+import Cookies from 'js-cookie';
 import ReactFsLightbox from 'fslightbox-react';
+import { getApiUrl, API_ENDPOINTS, API_KEY } from '../../../apiConfig';
+
 
 // images
 import img1 from '../../../assets/images/page-img/profile-bg1.jpg'
@@ -84,33 +88,69 @@ import img63 from '../../../assets/images/page-img/63.jpg'
 // Fslightbox plugin
 const FsLightbox = ReactFsLightbox.default ? ReactFsLightbox.default : ReactFsLightbox;
 
-const UserProfile =() =>{
+const UserProfile = () => {
    const [show, setShow] = useState(false);
    const handleClose = () => setShow(false);
    const handleShow = () => setShow(true);
+   const [first_name, setUserData] = useState(null);
+
+   const token = Cookies.get('token');
 
    const [imageController, setImageController] = useState({
       toggler: false,
       slide: 1
-  });
-  
-  function imageOnSlide(number) {
-      setImageController({
-      toggler: !imageController.toggler,
-      slide: number
-      }); 
-  }
+   });
 
-  return(
+   function imageOnSlide(number) {
+      setImageController({
+         toggler: !imageController.toggler,
+         slide: number
+      });
+   }
+   useEffect(() => {
+      try {
+         const formDataObj = new FormData();
+         console.log(FormData);
+         formDataObj.append('api_key', API_KEY);
+         formDataObj.append('token', token);
+         axios({
+            url: getApiUrl(API_ENDPOINTS.USER_PROFILE),
+            method: 'POST',
+            data: formDataObj
+         }).then(function (response) {
+            //handle success
+           
+            // Cookies.set("first_name", response.first_name);
+            // Cookies.set("last_name", response.last_name);
+            // Cookies.set("gender", response.gender);
+            // Cookies.set("about", response.about);
+            // Cookies.set("date_of_birth", response.date_of_birth);
+            // Cookies.set("facebook_profile_link", response.facebook_profile_link);
+            // Cookies.set("about", response.about);
+            // Cookies.set("date_of_birth", response.date_of_birth);
+            if (response.data.status == 200) {
+               setUserData(response.data.data.first_name);
+               console.log(response.data.data.first_name);
+            }
+         }).catch(function (response) {
+            //handle error
+            console.log(response);
+         });
+      } catch (err) {
+   
+      }
+    }, []);
+   
+   return (
       <>
-      <FsLightbox
-                toggler={imageController.toggler}
-                sources={[g1,g2,g3,g4,g5,g6,g7,g8,g9,img51,img52,img53,img54
-                           ,img55,img56,img57,img58,img59,img60,img61,img62,img63,img64,img65,img51,img52,img53,img54
-                           ,img55,img56,img57,img58,img51,img52,img53,img54
-                           ,img55,img56,img57,img58,img59,img60]}
-                slide={imageController.slide}
-            />
+         <FsLightbox
+            toggler={imageController.toggler}
+            sources={[g1, g2, g3, g4, g5, g6, g7, g8, g9, img51, img52, img53, img54
+               , img55, img56, img57, img58, img59, img60, img61, img62, img63, img64, img65, img51, img52, img53, img54
+               , img55, img56, img57, img58, img51, img52, img53, img54
+               , img55, img56, img57, img58, img59, img60]}
+            slide={imageController.slide}
+         />
          <Container>
             <Row>
                <Col sm={12}>
@@ -118,16 +158,16 @@ const UserProfile =() =>{
                      <Card.Body className=" profile-page p-0">
                         <div className="profile-header">
                            <div className="position-relative">
-                              <img loading="lazy" src={img1} alt="profile-bg" className="rounded img-fluid"/>
+                              <img loading="lazy" src={img1} alt="profile-bg" className="rounded img-fluid" />
                               <ul className="header-nav list-inline d-flex flex-wrap justify-end p-0 m-0">
                                  <li>
                                     <Link to="#" className="material-symbols-outlined">
                                        edit
                                     </Link>
-                                    </li>
+                                 </li>
                                  <li>
                                     <Link to="#" className="material-symbols-outlined">
-                                    settings
+                                       settings
                                     </Link>
                                  </li>
                               </ul>
@@ -137,29 +177,31 @@ const UserProfile =() =>{
                                  <img loading="lazy" src={img2} alt="profile-img1" className="avatar-130 img-fluid" />
                               </div>
                               <div className="profile-detail">
-                                 <h3>Bni Cyst</h3>
+                                 <h3>
+                                 {first_name}                              
+                                 </h3>
                               </div>
                            </div>
                            <div className="profile-info p-3 d-flex align-items-center justify-content-between position-relative">
                               <div className="social-links">
                                  <ul className="social-data-block d-flex align-items-center justify-content-between list-inline p-0 m-0">
                                     <li className="text-center pe-3">
-                                       <Link to="#"><img loading="lazy" src={img3} className="img-fluid rounded" alt="facebook"/></Link>
+                                       <Link to="#"><img loading="lazy" src={img3} className="img-fluid rounded" alt="facebook" /></Link>
                                     </li>
                                     <li className="text-center pe-3">
-                                       <Link to="#"><img loading="lazy" src={img4} className="img-fluid rounded" alt="Twitter"/></Link>
+                                       <Link to="#"><img loading="lazy" src={img4} className="img-fluid rounded" alt="Twitter" /></Link>
                                     </li>
                                     <li className="text-center pe-3">
-                                       <Link to="#"><img loading="lazy" src={img5} className="img-fluid rounded" alt="Instagram"/></Link>
+                                       <Link to="#"><img loading="lazy" src={img5} className="img-fluid rounded" alt="Instagram" /></Link>
                                     </li>
                                     <li className="text-center pe-3">
-                                       <Link to="#"><img loading="lazy" src={img6} className="img-fluid rounded" alt="Google plus"/></Link>
+                                       <Link to="#"><img loading="lazy" src={img6} className="img-fluid rounded" alt="Google plus" /></Link>
                                     </li>
                                     <li className="text-center pe-3">
-                                       <Link to="#"><img loading="lazy" src={img7} className="img-fluid rounded" alt="You tube"/></Link>
+                                       <Link to="#"><img loading="lazy" src={img7} className="img-fluid rounded" alt="You tube" /></Link>
                                     </li>
                                     <li className="text-center md-pe-3 pe-0">
-                                       <Link to="#"><img loading="lazy" src={img8} className="img-fluid rounded" alt="linkedin"/></Link>
+                                       <Link to="#"><img loading="lazy" src={img8} className="img-fluid rounded" alt="linkedin" /></Link>
                                     </li>
                                  </ul>
                               </div>
@@ -179,7 +221,7 @@ const UserProfile =() =>{
                                     </li>
                                  </ul>
                               </div>
-                          </div>
+                           </div>
                         </div>
                      </Card.Body>
                   </Card>
@@ -190,16 +232,16 @@ const UserProfile =() =>{
                         <div className="user-tabing">
                            <Nav as="ul" variant="pills" className="d-flex align-items-center justify-content-center profile-feed-items p-0 m-0">
                               <Nav.Item as="li" className=" col-12 col-sm-3 p-0 ">
-                                 <Nav.Link  href="#pills-timeline-tab"  eventKey="first" role="button" className=" text-center p-3">Timeline</Nav.Link>
+                                 <Nav.Link href="#pills-timeline-tab" eventKey="first" role="button" className=" text-center p-3">Timeline</Nav.Link>
                               </Nav.Item>
                               <Nav.Item as="li" className="col-12 col-sm-3 p-0">
-                                 <Nav.Link  href="#pills-about-tab" eventKey="second" role="button" className="text-center p-3">About</Nav.Link>
+                                 <Nav.Link href="#pills-about-tab" eventKey="second" role="button" className="text-center p-3">About</Nav.Link>
                               </Nav.Item>
                               <Nav.Item as="li" className=" col-12 col-sm-3 p-0">
-                                 <Nav.Link  href="#pills-friends-tab"  eventKey="third" role="button" className="text-center p-3">Friends</Nav.Link>
+                                 <Nav.Link href="#pills-friends-tab" eventKey="third" role="button" className="text-center p-3">Friends</Nav.Link>
                               </Nav.Item>
                               <Nav.Item as="li" className="col-12 col-sm-3 p-0">
-                                 <Nav.Link  href="#pills-photos-tab"  eventKey="forth" role="button" className="text-center p-3">Photos</Nav.Link>
+                                 <Nav.Link href="#pills-photos-tab" eventKey="forth" role="button" className="text-center p-3">Photos</Nav.Link>
                               </Nav.Item>
                            </Nav>
                         </div>
@@ -229,11 +271,11 @@ const UserProfile =() =>{
                                           <Row>
                                              <Col sm={12}>
                                                 <div className="event-post position-relative">
-                                                   <Link to="#"><img loading="lazy" src={img9} alt="gallary1" className="img-fluid rounded"/></Link>
+                                                   <Link to="#"><img loading="lazy" src={img9} alt="gallary1" className="img-fluid rounded" /></Link>
                                                    <div className="job-icon-position">
-                                                   <div className="job-icon bg-primary p-2 d-inline-block rounded-circle material-symbols-outlined text-white">
-                                                      local_mall
-                                                   </div>
+                                                      <div className="job-icon bg-primary p-2 d-inline-block rounded-circle material-symbols-outlined text-white">
+                                                         local_mall
+                                                      </div>
                                                    </div>
                                                    <div className="card-body text-center p-2">
                                                       <h5>Started New Job at Apple</h5>
@@ -243,11 +285,11 @@ const UserProfile =() =>{
                                              </Col>
                                              <Col sm={12}>
                                                 <div className="event-post position-relative">
-                                                   <Link to="#"><img loading="lazy" src={img10} alt="gallary1" className="img-fluid rounded"/></Link>
+                                                   <Link to="#"><img loading="lazy" src={img10} alt="gallary1" className="img-fluid rounded" /></Link>
                                                    <div className="job-icon-position">
-                                                   <div className="job-icon bg-primary p-2 d-inline-block rounded-circle material-symbols-outlined text-white">
-                                                      local_mall
-                                                   </div>
+                                                      <div className="job-icon bg-primary p-2 d-inline-block rounded-circle material-symbols-outlined text-white">
+                                                         local_mall
+                                                      </div>
                                                    </div>
                                                    <div className="card-body text-center p-2">
                                                       <h5>Freelance Photographer</h5>
@@ -294,7 +336,7 @@ const UserProfile =() =>{
                                           <ul className="profile-img-gallary p-0 m-0 list-unstyled">
                                              <li>
                                                 <Link to="#">
-                                                <img loading="lazy" src={user05} alt="gallary" className="img-fluid" /></Link>
+                                                   <img loading="lazy" src={user05} alt="gallary" className="img-fluid" /></Link>
                                                 <h6 className="mt-2 text-center">Anna Rexia</h6>
                                              </li>
                                              <li>
@@ -343,137 +385,137 @@ const UserProfile =() =>{
                                        <Card.Body>
                                           <div className="d-flex align-items-center">
                                              <div className="user-img">
-                                                <img loading="lazy" src={user1} alt="userimg" className="avatar-60 rounded-circle"/>
+                                                <img loading="lazy" src={user1} alt="userimg" className="avatar-60 rounded-circle" />
                                              </div>
                                              <form className="post-text ms-3 w-100 " onClick={handleShow}>
-                                                <input type="text" className="form-control rounded" placeholder="Write something here..." style={{border:"none"}}/>
+                                                <input type="text" className="form-control rounded" placeholder="Write something here..." style={{ border: "none" }} />
                                              </form>
                                           </div>
-                                          <hr/>
+                                          <hr />
                                           <ul className=" post-opt-block d-flex list-inline m-0 p-0 flex-wrap">
-                                                <li className="bg-soft-primary rounded p-2 pointer d-flex align-items-center me-3 mb-md-0 mb-2"><img loading="lazy" src={small07} alt="icon" className="img-fluid me-2"/> Photo/Video</li>
-                                                <li className="bg-soft-primary rounded p-2 pointer d-flex align-items-center me-3 mb-md-0 mb-2"><img loading="lazy" src={small08} alt="icon" className="img-fluid me-2"/> Tag Friend</li>
-                                                <li className="bg-soft-primary rounded p-2 pointer d-flex align-items-center me-3"><img loading="lazy" src={small09} alt="icon" className="img-fluid me-2"/> Feeling/Activity</li>
-                                                <li className="bg-soft-primary rounded p-2 pointer text-center">
-                                                   <div className="card-header-toolbar d-flex align-items-center">
-                                                      <Dropdown>
-                                                         <Dropdown.Toggle as={CustomToggle}  id="post-option"  >
+                                             <li className="bg-soft-primary rounded p-2 pointer d-flex align-items-center me-3 mb-md-0 mb-2"><img loading="lazy" src={small07} alt="icon" className="img-fluid me-2" /> Photo/Video</li>
+                                             <li className="bg-soft-primary rounded p-2 pointer d-flex align-items-center me-3 mb-md-0 mb-2"><img loading="lazy" src={small08} alt="icon" className="img-fluid me-2" /> Tag Friend</li>
+                                             <li className="bg-soft-primary rounded p-2 pointer d-flex align-items-center me-3"><img loading="lazy" src={small09} alt="icon" className="img-fluid me-2" /> Feeling/Activity</li>
+                                             <li className="bg-soft-primary rounded p-2 pointer text-center">
+                                                <div className="card-header-toolbar d-flex align-items-center">
+                                                   <Dropdown>
+                                                      <Dropdown.Toggle as={CustomToggle} id="post-option"  >
                                                          <span className="material-symbols-outlined">
-                                                            more_horiz  
+                                                            more_horiz
                                                          </span>
-                                                         </Dropdown.Toggle>
-                                                         <Dropdown.Menu className=" dropdown-menu-right" aria-labelledby="post-option" >
-                                                               <Dropdown.Item onClick={handleShow}  href="#" >Check in</Dropdown.Item>
-                                                               <Dropdown.Item onClick={handleShow}  href="#" >Live Video</Dropdown.Item>
-                                                               <Dropdown.Item onClick={handleShow}  href="#" >Gif</Dropdown.Item>
-                                                               <Dropdown.Item onClick={handleShow}  href="#" >Watch Party</Dropdown.Item>
-                                                               <Dropdown.Item onClick={handleShow}  href="#" >Play with Friend</Dropdown.Item>
-                                                         </Dropdown.Menu>
-                                                      </Dropdown>
-                                                   </div>
-                                                </li>
+                                                      </Dropdown.Toggle>
+                                                      <Dropdown.Menu className=" dropdown-menu-right" aria-labelledby="post-option" >
+                                                         <Dropdown.Item onClick={handleShow} href="#" >Check in</Dropdown.Item>
+                                                         <Dropdown.Item onClick={handleShow} href="#" >Live Video</Dropdown.Item>
+                                                         <Dropdown.Item onClick={handleShow} href="#" >Gif</Dropdown.Item>
+                                                         <Dropdown.Item onClick={handleShow} href="#" >Watch Party</Dropdown.Item>
+                                                         <Dropdown.Item onClick={handleShow} href="#" >Play with Friend</Dropdown.Item>
+                                                      </Dropdown.Menu>
+                                                   </Dropdown>
+                                                </div>
+                                             </li>
                                           </ul>
                                        </Card.Body>
                                        <Modal show={show} onHide={handleClose} size="lg">
-                                        <Modal.Header className="d-flex justify-content-between">
-                                            <h5 className="modal-title" id="post-modalLabel">Create Post</h5>
-                                            <button type="button" className="btn btn-secondary lh-1"  onClick={handleClose} ><span className="material-symbols-outlined">close</span></button>
-                                        </Modal.Header>
-                                        <Modal.Body>
-                                            <div className="d-flex align-items-center">
+                                          <Modal.Header className="d-flex justify-content-between">
+                                             <h5 className="modal-title" id="post-modalLabel">Create Post</h5>
+                                             <button type="button" className="btn btn-secondary lh-1" onClick={handleClose} ><span className="material-symbols-outlined">close</span></button>
+                                          </Modal.Header>
+                                          <Modal.Body>
+                                             <div className="d-flex align-items-center">
                                                 <div className="user-img">
-                                                    <img loading="lazy" src={user9} alt="userimg" className="avatar-60 rounded-circle img-fluid"/>
+                                                   <img loading="lazy" src={user9} alt="userimg" className="avatar-60 rounded-circle img-fluid" />
                                                 </div>
                                                 <form className="post-text ms-3 w-100" action="">
-                                                    <input type="text" className="form-control rounded" placeholder="Write something here..." style={{border: "none"}}/>
+                                                   <input type="text" className="form-control rounded" placeholder="Write something here..." style={{ border: "none" }} />
                                                 </form>
-                                            </div>
-                                            <hr/>
-                                            <ul className="d-flex flex-wrap align-items-center list-inline m-0 p-0">
+                                             </div>
+                                             <hr />
+                                             <ul className="d-flex flex-wrap align-items-center list-inline m-0 p-0">
                                                 <li className="col-md-6 mb-3">
-                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small1} alt="icon" className="img-fluid"/> Photo/Video</div>
+                                                   <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small1} alt="icon" className="img-fluid" /> Photo/Video</div>
                                                 </li>
                                                 <li className="col-md-6 mb-3">
-                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small2} alt="icon" className="img-fluid"/> Tag Friend</div>
+                                                   <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small2} alt="icon" className="img-fluid" /> Tag Friend</div>
                                                 </li>
                                                 <li className="col-md-6 mb-3">
-                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small3} alt="icon" className="img-fluid"/> Feeling/Activity</div>
+                                                   <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small3} alt="icon" className="img-fluid" /> Feeling/Activity</div>
                                                 </li>
                                                 <li className="col-md-6 mb-3">
-                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small4} alt="icon" className="img-fluid"/> Check in</div>
+                                                   <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small4} alt="icon" className="img-fluid" /> Check in</div>
                                                 </li>
                                                 <li className="col-md-6 mb-3">
-                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small5} alt="icon" className="img-fluid"/> Live Video</div>
+                                                   <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small5} alt="icon" className="img-fluid" /> Live Video</div>
                                                 </li>
                                                 <li className="col-md-6 mb-3">
-                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small6} alt="icon" className="img-fluid"/> Gif</div>
+                                                   <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small6} alt="icon" className="img-fluid" /> Gif</div>
                                                 </li>
                                                 <li className="col-md-6 mb-3">
-                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small7} alt="icon" className="img-fluid"/> Watch Party</div>
+                                                   <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small7} alt="icon" className="img-fluid" /> Watch Party</div>
                                                 </li>
                                                 <li className="col-md-6 mb-3">
-                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small8} alt="icon" className="img-fluid"/> Play with Friends</div>
+                                                   <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link><img loading="lazy" src={small8} alt="icon" className="img-fluid" /> Play with Friends</div>
                                                 </li>
-                                            </ul>
-                                            <hr/>
-                                            <div className="other-option">
+                                             </ul>
+                                             <hr />
+                                             <div className="other-option">
                                                 <div className="d-flex align-items-center justify-content-between">
-                                                    <div className="d-flex align-items-center">
-                                                        <div className="user-img me-3">
-                                                            <img loading="lazy" src={user9} alt="userimg" className="avatar-60 rounded-circle img-fluid"/>
-                                                        </div>
-                                                        <h6>Your Story</h6>
-                                                    </div>
-                                                    <div className="card-post-toolbar">
-                                                        <Dropdown>
-                                                            <Dropdown.Toggle className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                                <span className="btn btn-primary">Friend</span>
-                                                            </Dropdown.Toggle>
-                                                            <Dropdown.Menu clemassName="dropdown-menu m-0 p-0">
-                                                                <Dropdown.Item className="dropdown-item p-3" href="#">
-                                                                    <div className="d-flex align-items-top">
-                                                                        <i className="ri-save-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                            <h6>Public</h6>
-                                                                            <p className="mb-0">Anyone on or off Facebook</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </Dropdown.Item>
-                                                                <Dropdown.Item className="dropdown-item p-3" href="#">
-                                                                    <div className="d-flex align-items-top">
-                                                                        <i className="ri-close-circle-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                            <h6>Friends</h6>
-                                                                            <p className="mb-0">Your Friend on facebook</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </Dropdown.Item>
-                                                                <Dropdown.Item className="dropdown-item p-3" href="#">
-                                                                    <div className="d-flex align-items-top">
-                                                                        <i className="ri-user-unfollow-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                            <h6>Friends except</h6>
-                                                                            <p className="mb-0">Don't show to some friends</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </Dropdown.Item>
-                                                                <Dropdown.Item className="dropdown-item p-3" href="#">
-                                                                    <div className="d-flex align-items-top">
-                                                                        <i className="ri-notification-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                            <h6>Only Me</h6>
-                                                                            <p className="mb-0">Only me</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </Dropdown.Item>
-                                                            </Dropdown.Menu>
-                                                        </Dropdown>
-                                                    </div>
+                                                   <div className="d-flex align-items-center">
+                                                      <div className="user-img me-3">
+                                                         <img loading="lazy" src={user9} alt="userimg" className="avatar-60 rounded-circle img-fluid" />
+                                                      </div>
+                                                      <h6>Your Story</h6>
+                                                   </div>
+                                                   <div className="card-post-toolbar">
+                                                      <Dropdown>
+                                                         <Dropdown.Toggle className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
+                                                            <span className="btn btn-primary">Friend</span>
+                                                         </Dropdown.Toggle>
+                                                         <Dropdown.Menu clemassName="dropdown-menu m-0 p-0">
+                                                            <Dropdown.Item className="dropdown-item p-3" href="#">
+                                                               <div className="d-flex align-items-top">
+                                                                  <i className="ri-save-line h4"></i>
+                                                                  <div className="data ms-2">
+                                                                     <h6>Public</h6>
+                                                                     <p className="mb-0">Anyone on or off Facebook</p>
+                                                                  </div>
+                                                               </div>
+                                                            </Dropdown.Item>
+                                                            <Dropdown.Item className="dropdown-item p-3" href="#">
+                                                               <div className="d-flex align-items-top">
+                                                                  <i className="ri-close-circle-line h4"></i>
+                                                                  <div className="data ms-2">
+                                                                     <h6>Friends</h6>
+                                                                     <p className="mb-0">Your Friend on facebook</p>
+                                                                  </div>
+                                                               </div>
+                                                            </Dropdown.Item>
+                                                            <Dropdown.Item className="dropdown-item p-3" href="#">
+                                                               <div className="d-flex align-items-top">
+                                                                  <i className="ri-user-unfollow-line h4"></i>
+                                                                  <div className="data ms-2">
+                                                                     <h6>Friends except</h6>
+                                                                     <p className="mb-0">Don't show to some friends</p>
+                                                                  </div>
+                                                               </div>
+                                                            </Dropdown.Item>
+                                                            <Dropdown.Item className="dropdown-item p-3" href="#">
+                                                               <div className="d-flex align-items-top">
+                                                                  <i className="ri-notification-line h4"></i>
+                                                                  <div className="data ms-2">
+                                                                     <h6>Only Me</h6>
+                                                                     <p className="mb-0">Only me</p>
+                                                                  </div>
+                                                               </div>
+                                                            </Dropdown.Item>
+                                                         </Dropdown.Menu>
+                                                      </Dropdown>
+                                                   </div>
                                                 </div>
-                                            </div>
-                                            <Button variant="primary" className="d-block w-100 mt-3">Post</Button>
-                                        </Modal.Body>
-                                    </Modal>
+                                             </div>
+                                             <Button variant="primary" className="d-block w-100 mt-3">Post</Button>
+                                          </Modal.Body>
+                                       </Modal>
                                     </Card>
                                     <Card>
                                        <Card.Body>
@@ -481,7 +523,7 @@ const UserProfile =() =>{
                                              <div className="user-post-data pb-3">
                                                 <div className="d-flex justify-content-between">
                                                    <div className="me-3">
-                                                      <img loading="lazy" className="rounded-circle  avatar-60" src={user1} alt=""/>
+                                                      <img loading="lazy" className="rounded-circle  avatar-60" src={user1} alt="" />
                                                    </div>
                                                    <div className="w-100">
                                                       <div className="d-flex justify-content-between flex-wrap">
@@ -493,9 +535,9 @@ const UserProfile =() =>{
                                                          <div className="card-post-toolbar">
                                                             <Dropdown>
                                                                <Dropdown.Toggle className="bg-transparent border-white">
-                                                               <span className="material-symbols-outlined">
-                                                                  more_horiz
-                                                               </span>
+                                                                  <span className="material-symbols-outlined">
+                                                                     more_horiz
+                                                                  </span>
                                                                </Dropdown.Toggle>
                                                                <Dropdown.Menu className=" m-0 p-0">
                                                                   <Dropdown.Item className=" p-3" to="#">
@@ -559,62 +601,62 @@ const UserProfile =() =>{
                                                       <div className="d-flex align-items-center">
                                                          <div className="like-data">
                                                             <Dropdown>
-                                                               <Dropdown.Toggle  as={CustomToggle} >
-                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt=""/>
+                                                               <Dropdown.Toggle as={CustomToggle} >
+                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt="" />
                                                                </Dropdown.Toggle>
                                                                <Dropdown.Menu className=" py-2">
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt=""/></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt="" /></OverlayTrigger>
                                                                </Dropdown.Menu>
                                                             </Dropdown>
                                                          </div>
                                                          <div className="total-like-block ms-2 me-3">
                                                             <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle}  id="post-option" >
+                                                               <Dropdown.Toggle as={CustomToggle} id="post-option" >
                                                                   140 Likes
                                                                </Dropdown.Toggle>
                                                                <Dropdown.Menu>
-                                                                     <Dropdown.Item  to="#">Max Emum</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Bill Yerds</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Hap E. Birthday</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Tara Misu</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Midge Itz</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Sal Vidge</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Other</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Max Emum</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Other</Dropdown.Item>
                                                                </Dropdown.Menu>
                                                             </Dropdown>
                                                          </div>
                                                       </div>
                                                       <div className="total-comment-block">
-                                                      <Dropdown>
-                                                         <Dropdown.Toggle as={CustomToggle}  id="post-option" >
-                                                         20 Comment
-                                                         </Dropdown.Toggle>
-                                                         <Dropdown.Menu>
-                                                            <Dropdown.Item  to="#">Max Emum</Dropdown.Item>
-                                                            <Dropdown.Item  to="#">Bill Yerds</Dropdown.Item>
-                                                            <Dropdown.Item  to="#">Hap E. Birthday</Dropdown.Item>
-                                                            <Dropdown.Item  to="#">Tara Misu</Dropdown.Item>
-                                                            <Dropdown.Item  to="#">Midge Itz</Dropdown.Item>
-                                                            <Dropdown.Item  to="#">Sal Vidge</Dropdown.Item>
-                                                            <Dropdown.Item  to="#">Other</Dropdown.Item>
-                                                         </Dropdown.Menu>
-                                                      </Dropdown>
+                                                         <Dropdown>
+                                                            <Dropdown.Toggle as={CustomToggle} id="post-option" >
+                                                               20 Comment
+                                                            </Dropdown.Toggle>
+                                                            <Dropdown.Menu>
+                                                               <Dropdown.Item to="#">Max Emum</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Other</Dropdown.Item>
+                                                            </Dropdown.Menu>
+                                                         </Dropdown>
                                                       </div>
                                                    </div>
-                                                <ShareOffcanvas />
+                                                   <ShareOffcanvas />
                                                 </div>
-                                                <hr/>
+                                                <hr />
                                                 <ul className="post-comments p-0 m-0">
                                                    <li className="mb-2">
                                                       <div className="d-flex flex-wrap">
                                                          <div className="user-img">
-                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid"/>
+                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
                                                          </div>
                                                          <div className="comment-data-block ms-3">
                                                             <h6>Monty Carlo</h6>
@@ -631,7 +673,7 @@ const UserProfile =() =>{
                                                    <li>
                                                       <div className="d-flex flex-wrap">
                                                          <div className="user-img">
-                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid"/>
+                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
                                                          </div>
                                                          <div className="comment-data-block ms-3">
                                                             <h6>Paul Molive</h6>
@@ -647,7 +689,7 @@ const UserProfile =() =>{
                                                    </li>
                                                 </ul>
                                                 <form className="comment-text d-flex align-items-center mt-3" >
-                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment"/>
+                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
                                                    <div className="comment-attagement d-flex">
                                                       <Link to="#" className="material-symbols-outlined me-3 link">insert_link</Link>
                                                       <Link to="#" className="material-symbols-outlined  me-3">sentiment_satisfied</Link>
@@ -660,7 +702,7 @@ const UserProfile =() =>{
                                              <div className="user-post-data py-3">
                                                 <div className="d-flex  justify-content-between">
                                                    <div className="me-3">
-                                                      <img loading="lazy" className="rounded-circle  avatar-60" src={user1} alt=""/>
+                                                      <img loading="lazy" className="rounded-circle  avatar-60" src={user1} alt="" />
                                                    </div>
                                                    <div className="w-100">
                                                       <div className="d-flex justify-content-between">
@@ -686,7 +728,7 @@ const UserProfile =() =>{
                                                                   </Dropdown.Item>
                                                                   <Dropdown.Item className=" p-3" to="#">
                                                                      <div className="d-flex align-items-top">
-                                                                     <i className="ri-pencil-line h4"></i>
+                                                                        <i className="ri-pencil-line h4"></i>
                                                                         <div className="data ms-2">
                                                                            <h6>Edit Post</h6>
                                                                            <p className="mb-0">Update your post and saved items</p>
@@ -695,7 +737,7 @@ const UserProfile =() =>{
                                                                   </Dropdown.Item>
                                                                   <Dropdown.Item className=" p-3" to="#">
                                                                      <div className="d-flex align-items-top">
-                                                                     <i className="ri-close-circle-line h4"></i>
+                                                                        <i className="ri-close-circle-line h4"></i>
                                                                         <div className="data ms-2">
                                                                            <h6>Hide From Timeline</h6>
                                                                            <p className="mb-0">See fewer posts like this.</p>
@@ -704,7 +746,7 @@ const UserProfile =() =>{
                                                                   </Dropdown.Item>
                                                                   <Dropdown.Item className=" p-3" to="#">
                                                                      <div className="d-flex align-items-top">
-                                                                     <i className="ri-delete-bin-7-line h4"></i>
+                                                                        <i className="ri-delete-bin-7-line h4"></i>
                                                                         <div className="data ms-2">
                                                                            <h6>Delete</h6>
                                                                            <p className="mb-0">Remove thids Post on Timeline</p>
@@ -736,62 +778,62 @@ const UserProfile =() =>{
                                                       <div className="d-flex align-items-center">
                                                          <div className="like-data">
                                                             <Dropdown>
-                                                               <Dropdown.Toggle  as={CustomToggle} >
-                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt=""/>
+                                                               <Dropdown.Toggle as={CustomToggle} >
+                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt="" />
                                                                </Dropdown.Toggle>
                                                                <Dropdown.Menu className=" py-2">
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt=""/></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt="" /></OverlayTrigger>
                                                                </Dropdown.Menu>
                                                             </Dropdown>
                                                          </div>
                                                          <div className="total-like-block ms-2 me-3">
                                                             <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle}  id="post-option" >
+                                                               <Dropdown.Toggle as={CustomToggle} id="post-option" >
                                                                   140 Likes
                                                                </Dropdown.Toggle>
                                                                <Dropdown.Menu>
-                                                                     <Dropdown.Item  to="#">Max Emum</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Bill Yerds</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Hap E. Birthday</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Tara Misu</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Midge Itz</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Sal Vidge</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Other</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Max Emum</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Other</Dropdown.Item>
                                                                </Dropdown.Menu>
                                                             </Dropdown>
                                                          </div>
                                                       </div>
                                                       <div className="total-comment-block">
                                                          <Dropdown>
-                                                            <Dropdown.Toggle as={CustomToggle}  id="post-option" >
+                                                            <Dropdown.Toggle as={CustomToggle} id="post-option" >
                                                                20 Comment
                                                             </Dropdown.Toggle>
                                                             <Dropdown.Menu>
-                                                               <Dropdown.Item  to="#">Max Emum</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Bill Yerds</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Hap E. Birthday</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Tara Misu</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Midge Itz</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Sal Vidge</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Other</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Max Emum</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Other</Dropdown.Item>
                                                             </Dropdown.Menu>
                                                          </Dropdown>
                                                       </div>
                                                    </div>
                                                    <ShareOffcanvas />
                                                 </div>
-                                                <hr/>
+                                                <hr />
                                                 <ul className="post-comments p-0 m-0">
                                                    <li className="mb-2">
                                                       <div className="d-flex flex-wrap">
                                                          <div className="user-img">
-                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid"/>
+                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
                                                          </div>
                                                          <div className="comment-data-block ms-3">
                                                             <h6>Monty Carlo</h6>
@@ -808,7 +850,7 @@ const UserProfile =() =>{
                                                    <li>
                                                       <div className="d-flex flex-wrap">
                                                          <div className="user-img">
-                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid"/>
+                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
                                                          </div>
                                                          <div className="comment-data-block ms-3">
                                                             <h6>Paul Molive</h6>
@@ -824,7 +866,7 @@ const UserProfile =() =>{
                                                    </li>
                                                 </ul>
                                                 <form className="comment-text d-flex align-items-center mt-3" >
-                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment"/>
+                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
                                                    <div className="comment-attagement d-flex">
                                                       <Link to="#" className="material-symbols-outlined me-3 link">insert_link</Link>
                                                       <Link to="#" className="material-symbols-outlined  me-3">sentiment_satisfied</Link>
@@ -837,7 +879,7 @@ const UserProfile =() =>{
                                              <div className="user-post-data py-3">
                                                 <div className="d-flex justify-content-between">
                                                    <div className="me-3">
-                                                      <img loading="lazy" className="rounded-circle avatar-60" src={user1} alt=""/>
+                                                      <img loading="lazy" className="rounded-circle avatar-60" src={user1} alt="" />
                                                    </div>
                                                    <div className="w-100">
                                                       <div className="d-flex justify-content-between">
@@ -854,7 +896,7 @@ const UserProfile =() =>{
                                                                <Dropdown.Menu className=" m-0 p-0">
                                                                   <Dropdown.Item className="p-3" to="#">
                                                                      <div className="d-flex align-items-top">
-                                                                     <i className="ri-save-line h4"></i>
+                                                                        <i className="ri-save-line h4"></i>
                                                                         <div className="data ms-2">
                                                                            <h6>Save Post</h6>
                                                                            <p className="mb-0">Add this to your saved items</p>
@@ -872,7 +914,7 @@ const UserProfile =() =>{
                                                                   </Dropdown.Item>
                                                                   <Dropdown.Item className="p-3" to="#">
                                                                      <div className="d-flex align-items-top">
-                                                                     <i className="ri-close-circle-line h4"></i>
+                                                                        <i className="ri-close-circle-line h4"></i>
                                                                         <div className="data ms-2">
                                                                            <h6>Hide From Timeline</h6>
                                                                            <p className="mb-0">See fewer posts like this.</p>
@@ -913,62 +955,62 @@ const UserProfile =() =>{
                                                       <div className="d-flex align-items-center">
                                                          <div className="like-data">
                                                             <Dropdown>
-                                                               <Dropdown.Toggle  as={CustomToggle} >
-                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt=""/>
+                                                               <Dropdown.Toggle as={CustomToggle} >
+                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt="" />
                                                                </Dropdown.Toggle>
                                                                <Dropdown.Menu className=" py-2">
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt=""/></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt="" /></OverlayTrigger>
                                                                </Dropdown.Menu>
                                                             </Dropdown>
                                                          </div>
                                                          <div className="total-like-block ms-2 me-3">
                                                             <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle}  id="post-option" >
-                                                               140 Likes
+                                                               <Dropdown.Toggle as={CustomToggle} id="post-option" >
+                                                                  140 Likes
                                                                </Dropdown.Toggle>
                                                                <Dropdown.Menu>
-                                                                     <Dropdown.Item  to="#">Max Emum</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Bill Yerds</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Hap E. Birthday</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Tara Misu</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Midge Itz</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Sal Vidge</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Other</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Max Emum</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Other</Dropdown.Item>
                                                                </Dropdown.Menu>
                                                             </Dropdown>
-                                                            </div>
                                                          </div>
-                                                         <div className="total-comment-block">
+                                                      </div>
+                                                      <div className="total-comment-block">
                                                          <Dropdown>
-                                                            <Dropdown.Toggle as={CustomToggle}  id="post-option" >
+                                                            <Dropdown.Toggle as={CustomToggle} id="post-option" >
                                                                20 Comment
                                                             </Dropdown.Toggle>
                                                             <Dropdown.Menu>
-                                                               <Dropdown.Item  to="#">Max Emum</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Bill Yerds</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Hap E. Birthday</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Tara Misu</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Midge Itz</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Sal Vidge</Dropdown.Item>
-                                                               <Dropdown.Item  to="#">Other</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Max Emum</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Other</Dropdown.Item>
                                                             </Dropdown.Menu>
-                                                      </Dropdown>
+                                                         </Dropdown>
                                                       </div>
                                                    </div>
                                                    <ShareOffcanvas />
                                                 </div>
-                                                <hr/>
+                                                <hr />
                                                 <ul className="post-comments p-0 m-0">
                                                    <li className="mb-2">
                                                       <div className="d-flex flex-wrap">
                                                          <div className="user-img">
-                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid"/>
+                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
                                                          </div>
                                                          <div className="comment-data-block ms-3">
                                                             <h6>Monty Carlo</h6>
@@ -985,7 +1027,7 @@ const UserProfile =() =>{
                                                    <li>
                                                       <div className="d-flex flex-wrap">
                                                          <div className="user-img">
-                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid"/>
+                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
                                                          </div>
                                                          <div className="comment-data-block ms-3">
                                                             <h6>Paul Molive</h6>
@@ -1001,7 +1043,7 @@ const UserProfile =() =>{
                                                    </li>
                                                 </ul>
                                                 <form className="comment-text d-flex align-items-center mt-3" >
-                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment"/>
+                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
                                                    <div className="comment-attagement d-flex">
                                                       <Link to="#" className="material-symbols-outlined me-3 link">insert_link</Link>
                                                       <Link to="#" className="material-symbols-outlined  me-3">sentiment_satisfied</Link>
@@ -1014,7 +1056,7 @@ const UserProfile =() =>{
                                              <div className="user-post-data py-3">
                                                 <div className="d-flex justify-content-between">
                                                    <div className=" me-3">
-                                                      <img loading="lazy" className="rounded-circle avatar-60" src={user1} alt=""/>
+                                                      <img loading="lazy" className="rounded-circle avatar-60" src={user1} alt="" />
                                                    </div>
                                                    <div className="w-100">
                                                       <div className="d-flex justify-content-between">
@@ -1031,7 +1073,7 @@ const UserProfile =() =>{
                                                                <Dropdown.Menu className=" m-0 p-0">
                                                                   <Dropdown.Item className=" p-3" to="#">
                                                                      <div className="d-flex align-items-top">
-                                                                     <i className="ri-save-line h4"></i>
+                                                                        <i className="ri-save-line h4"></i>
                                                                         <div className="data ms-2">
                                                                            <h6>Save Post</h6>
                                                                            <p className="mb-0">Add this to your saved items</p>
@@ -1040,7 +1082,7 @@ const UserProfile =() =>{
                                                                   </Dropdown.Item>
                                                                   <Dropdown.Item className=" p-3" to="#">
                                                                      <div className="d-flex align-items-top">
-                                                                     <i className="ri-pencil-line h4"></i>
+                                                                        <i className="ri-pencil-line h4"></i>
                                                                         <div className="data ms-2">
                                                                            <h6>Edit Post</h6>
                                                                            <p className="mb-0">Update your post and saved items</p>
@@ -1058,7 +1100,7 @@ const UserProfile =() =>{
                                                                   </Dropdown.Item>
                                                                   <Dropdown.Item className=" p-3" to="#">
                                                                      <div className="d-flex align-items-top">
-                                                                     <i className="ri-delete-bin-7-line h4"></i>
+                                                                        <i className="ri-delete-bin-7-line h4"></i>
                                                                         <div className="data ms-2">
                                                                            <h6>Delete</h6>
                                                                            <p className="mb-0">Remove thids Post on Timeline</p>
@@ -1067,7 +1109,7 @@ const UserProfile =() =>{
                                                                   </Dropdown.Item>
                                                                   <Dropdown.Item className=" p-3" to="#">
                                                                      <div className="d-flex align-items-top">
-                                                                     <i className="ri-notification-line h4"></i>
+                                                                        <i className="ri-notification-line h4"></i>
                                                                         <div className="data ms-2">
                                                                            <h6>Notifications</h6>
                                                                            <p className="mb-0">Turn on notifications for this post</p>
@@ -1090,62 +1132,62 @@ const UserProfile =() =>{
                                                       <div className="d-flex align-items-center">
                                                          <div className="like-data">
                                                             <Dropdown>
-                                                               <Dropdown.Toggle  as={CustomToggle} >
-                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt=""/>
+                                                               <Dropdown.Toggle as={CustomToggle} >
+                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt="" />
                                                                </Dropdown.Toggle>
                                                                <Dropdown.Menu className=" py-2">
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt=""/></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt=""/></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt="" /></OverlayTrigger>
+                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt="" /></OverlayTrigger>
                                                                </Dropdown.Menu>
                                                             </Dropdown>
                                                          </div>
                                                          <div className="total-like-block ms-2 me-3">
                                                             <Dropdown>
-                                                                  <Dropdown.Toggle as={CustomToggle}  id="post-option" >
-                                                                     140 Likes
-                                                                  </Dropdown.Toggle>
-                                                                  <Dropdown.Menu>
-                                                                     <Dropdown.Item  to="#">Max Emum</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Bill Yerds</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Hap E. Birthday</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Tara Misu</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Midge Itz</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Sal Vidge</Dropdown.Item>
-                                                                     <Dropdown.Item  to="#">Other</Dropdown.Item>
-                                                                  </Dropdown.Menu>
-                                                               </Dropdown>
-                                                               </div>
-                                                         </div>
-                                                         <div className="total-comment-block">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle}  id="post-option" >
-                                                                  20 Comment
+                                                               <Dropdown.Toggle as={CustomToggle} id="post-option" >
+                                                                  140 Likes
                                                                </Dropdown.Toggle>
                                                                <Dropdown.Menu>
-                                                                  <Dropdown.Item  to="#">Max Emum</Dropdown.Item>
-                                                                  <Dropdown.Item  to="#">Bill Yerds</Dropdown.Item>
-                                                                  <Dropdown.Item  to="#">Hap E. Birthday</Dropdown.Item>
-                                                                  <Dropdown.Item  to="#">Tara Misu</Dropdown.Item>
-                                                                  <Dropdown.Item  to="#">Midge Itz</Dropdown.Item>
-                                                                  <Dropdown.Item  to="#">Sal Vidge</Dropdown.Item>
-                                                                  <Dropdown.Item  to="#">Other</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Max Emum</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
+                                                                  <Dropdown.Item to="#">Other</Dropdown.Item>
                                                                </Dropdown.Menu>
-                                                         </Dropdown>
+                                                            </Dropdown>
                                                          </div>
+                                                      </div>
+                                                      <div className="total-comment-block">
+                                                         <Dropdown>
+                                                            <Dropdown.Toggle as={CustomToggle} id="post-option" >
+                                                               20 Comment
+                                                            </Dropdown.Toggle>
+                                                            <Dropdown.Menu>
+                                                               <Dropdown.Item to="#">Max Emum</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
+                                                               <Dropdown.Item to="#">Other</Dropdown.Item>
+                                                            </Dropdown.Menu>
+                                                         </Dropdown>
+                                                      </div>
                                                    </div>
-                                                <ShareOffcanvas />
+                                                   <ShareOffcanvas />
                                                 </div>
-                                                <hr/>
+                                                <hr />
                                                 <ul className="post-comments p-0 m-0">
                                                    <li className="mb-2">
                                                       <div className="d-flex flex-wrap">
                                                          <div className="user-img">
-                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid"/>
+                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
                                                          </div>
                                                          <div className="comment-data-block ms-3">
                                                             <h6>Monty Carlo</h6>
@@ -1162,7 +1204,7 @@ const UserProfile =() =>{
                                                    <li>
                                                       <div className="d-flex flex-wrap">
                                                          <div className="user-img">
-                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid"/>
+                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
                                                          </div>
                                                          <div className="comment-data-block ms-3">
                                                             <h6>Paul Molive</h6>
@@ -1178,7 +1220,7 @@ const UserProfile =() =>{
                                                    </li>
                                                 </ul>
                                                 <form className="comment-text d-flex align-items-center mt-3" >
-                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment"/>
+                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
                                                    <div className="comment-attagement d-flex">
                                                       <Link to="#" className="material-symbols-outlined me-3 link">insert_link</Link>
                                                       <Link to="#" className="material-symbols-outlined  me-3">sentiment_satisfied</Link>
@@ -1192,14 +1234,14 @@ const UserProfile =() =>{
                                  </Col>
                               </Row>
                            </Card.Body>
-                        </Tab.Pane> 
+                        </Tab.Pane>
                         <Tab.Pane eventKey="second">
                            <Tab.Container id="left-tabs-example" defaultActiveKey="about1">
                               <Row>
                                  <Col md={4}>
                                     <Card>
                                        <Card.Body>
-                                          <Nav variant="pills"  className=" basic-info-items list-inline d-block p-0 m-0">
+                                          <Nav variant="pills" className=" basic-info-items list-inline d-block p-0 m-0">
                                              <Nav.Item >
                                                 <Nav.Link href="#" eventKey="about1">Contact and Basic Info</Nav.Link>
                                              </Nav.Item>
@@ -1225,14 +1267,14 @@ const UserProfile =() =>{
                                           <Tab.Content >
                                              <Tab.Pane eventKey="about1">
                                                 <h4>Personal Info</h4>
-                                                <hr/>
+                                                <hr />
                                                 <Row className="mb-2">
                                                    <div className="col-3">
                                                       <h6>About Me:</h6>
                                                    </div>
                                                    <div className="col-9">
                                                       <p className="mb-0">Hi, I’m James, I’m 36 and I work as a Digital Designer for the “Daydreams” Agency in Pier 56</p>
-                                                   </div>  
+                                                   </div>
                                                 </Row>
                                                 <Row className="mb-2">
                                                    <div className="col-3">
@@ -1396,9 +1438,9 @@ const UserProfile =() =>{
                                                 <ul className="suggestions-lists m-0 p-0">
                                                    <li className="d-flex mb-4 align-items-center">
                                                       <div className="user-img img-fluid">
-                                                      <span className="material-symbols-outlined md-18">
-                                                         add
-                                                      </span>
+                                                         <span className="material-symbols-outlined md-18">
+                                                            add
+                                                         </span>
                                                       </div>
                                                       <div className="media-support-info ms-3">
                                                          <h6>Add Your Relationship Status</h6>
@@ -1409,16 +1451,16 @@ const UserProfile =() =>{
                                                 <ul className="suggestions-lists m-0 p-0">
                                                    <li className="d-flex mb-4 align-items-center">
                                                       <div className="user-img img-fluid">
-                                                      <span className="material-symbols-outlined md-18">
-                                                         add
-                                                      </span>
+                                                         <span className="material-symbols-outlined md-18">
+                                                            add
+                                                         </span>
                                                       </div>
                                                       <div className="media-support-info ms-3">
                                                          <h6>Add Family Members</h6>
                                                       </div>
                                                    </li>
                                                    <li className="d-flex mb-4 align-items-center justify-content-between">
-                                                      <div className="user-img img-fluid"><img loading="lazy" src={user01} alt="story1" className="rounded-circle avatar-40"/></div>
+                                                      <div className="user-img img-fluid"><img loading="lazy" src={user01} alt="story1" className="rounded-circle avatar-40" /></div>
                                                       <div className="w-100">
                                                          <div className="d-flex justify-content-between">
                                                             <div className="ms-3">
@@ -1437,7 +1479,7 @@ const UserProfile =() =>{
                                                       </div>
                                                    </li>
                                                    <li className="d-flex justify-content-between mb-4  align-items-center">
-                                                      <div className="user-img img-fluid"><img loading="lazy" src={user02} alt="story-img" className="rounded-circle avatar-40"/></div>
+                                                      <div className="user-img img-fluid"><img loading="lazy" src={user02} alt="story-img" className="rounded-circle avatar-40" /></div>
                                                       <div className="w-100">
                                                          <div className="d-flex flex-wrap justify-content-between">
                                                             <div className=" ms-3">
@@ -1456,7 +1498,7 @@ const UserProfile =() =>{
                                                       </div>
                                                    </li>
                                                    <li className="d-flex mb-4 align-items-center justify-content-between">
-                                                      <div className="user-img img-fluid"><img loading="lazy" src={user03} alt="story-img" className="rounded-circle avatar-40"/></div>
+                                                      <div className="user-img img-fluid"><img loading="lazy" src={user03} alt="story-img" className="rounded-circle avatar-40" /></div>
                                                       <div className="w-100">
                                                          <div className="d-flex justify-content-between">
                                                             <div className="ms-3">
@@ -1486,7 +1528,7 @@ const UserProfile =() =>{
                                                       </div>
                                                    </li>
                                                    <li className="d-flex mb-4 align-items-center justify-content-between">
-                                                      <div className="user-img img-fluid"><img loading="lazy" src={user01} alt="story-img" className="rounded-circle avatar-40"/></div>
+                                                      <div className="user-img img-fluid"><img loading="lazy" src={user01} alt="story-img" className="rounded-circle avatar-40" /></div>
                                                       <div className="w-100">
                                                          <div className="d-flex justify-content-between">
                                                             <div className="ms-3">
@@ -1505,7 +1547,7 @@ const UserProfile =() =>{
                                                       </div>
                                                    </li>
                                                    <li className="d-flex mb-4 align-items-center justify-content-between">
-                                                      <div className="user-img img-fluid"><img loading="lazy" src={user02} alt="story-img" className="rounded-circle avatar-40"/></div>
+                                                      <div className="user-img img-fluid"><img loading="lazy" src={user02} alt="story-img" className="rounded-circle avatar-40" /></div>
                                                       <div className="w-100">
                                                          <div className="d-flex flex-wrap justify-content-between">
                                                             <div className="ms-3">
@@ -1524,7 +1566,7 @@ const UserProfile =() =>{
                                                       </div>
                                                    </li>
                                                    <li className="d-flex mb-4 align-items-center justify-content-between">
-                                                      <div className="user-img img-fluid"><img loading="lazy" src={user03} alt="story-img" className="rounded-circle avatar-40"/></div>
+                                                      <div className="user-img img-fluid"><img loading="lazy" src={user03} alt="story-img" className="rounded-circle avatar-40" /></div>
                                                       <div className="w-100">
                                                          <div className="d-flex flex-wrap justify-content-between">
                                                             <div className="ms-3">
@@ -1561,7 +1603,7 @@ const UserProfile =() =>{
                                                       </div>
                                                    </li>
                                                    <li className="d-flex mb-4 align-items-center">
-                                                      <div className="user-img img-fluid"><img loading="lazy" src={user01} alt="story-img" className="rounded-circle avatar-40"/></div>
+                                                      <div className="user-img img-fluid"><img loading="lazy" src={user01} alt="story-img" className="rounded-circle avatar-40" /></div>
                                                       <div className="w-100">
                                                          <div className="d-flex flex-wrap justify-content-between">
                                                             <div className="ms-3">
@@ -1585,7 +1627,7 @@ const UserProfile =() =>{
                                                 <h4 className="mb-3">Current City and Hometown</h4>
                                                 <ul className="suggestions-lists m-0 p-0">
                                                    <li className="d-flex mb-4 align-items-center justify-content-between">
-                                                      <div className="user-img img-fluid"><img loading="lazy" src={user01} alt="story-img" className="rounded-circle avatar-40"/></div>
+                                                      <div className="user-img img-fluid"><img loading="lazy" src={user01} alt="story-img" className="rounded-circle avatar-40" /></div>
                                                       <div className="w-100">
                                                          <div className="d-flex flex-wrap justify-content-between">
                                                             <div className="ms-3">
@@ -1604,7 +1646,7 @@ const UserProfile =() =>{
                                                       </div>
                                                    </li>
                                                    <li className="d-flex mb-4 align-items-center justify-content-between">
-                                                      <div className="user-img img-fluid"><img loading="lazy" src={user02} alt="story-img" className="rounded-circle avatar-40"/></div>
+                                                      <div className="user-img img-fluid"><img loading="lazy" src={user02} alt="story-img" className="rounded-circle avatar-40" /></div>
                                                       <div className="w-100">
                                                          <div className="d-flex flex-wrap justify-content-between">
                                                             <div className="ms-3">
@@ -1639,7 +1681,7 @@ const UserProfile =() =>{
                                  </Col>
                               </Row>
                            </Tab.Container>
-                        </Tab.Pane> 
+                        </Tab.Pane>
                         <Tab.Pane eventKey="third" >
                            <Tab.Container id="left-tabs-example" defaultActiveKey="all-friends">
                               <Card>
@@ -1648,7 +1690,7 @@ const UserProfile =() =>{
                                     <div className="friend-list-tab mt-2">
                                        <Nav variant="pills" className=" d-flex align-items-center justify-content-left friend-list-items p-0 mb-2">
                                           <Nav.Item>
-                                             <Nav.Link  href="#pill-all-friends" eventKey="all-friends">All Friends</Nav.Link>
+                                             <Nav.Link href="#pill-all-friends" eventKey="all-friends">All Friends</Nav.Link>
                                           </Nav.Item>
                                           <Nav.Item>
                                              <Nav.Link href="#pill-recently-add" eventKey="recently-add">Recently Added</Nav.Link>
@@ -1672,7 +1714,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                               <img loading="lazy" src={user05} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Petey Cruiser</h5>
@@ -1688,7 +1730,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -1704,7 +1746,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Anna Sthesia</h5>
@@ -1720,7 +1762,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -1736,7 +1778,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Paul Molive</h5>
@@ -1752,7 +1794,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -1768,7 +1810,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Gail Forcewind</h5>
@@ -1784,7 +1826,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -1800,7 +1842,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user09} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user09} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Paige Turner</h5>
@@ -1816,7 +1858,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -1832,7 +1874,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user10} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user10} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>b Frapples</h5>
@@ -1848,7 +1890,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -1864,7 +1906,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user13} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user13} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Walter Melon</h5>
@@ -1880,7 +1922,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -1896,7 +1938,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user14} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user14} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Barb Ackue</h5>
@@ -1912,7 +1954,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -1928,7 +1970,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user15} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user15} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Buck Kinnear</h5>
@@ -1944,7 +1986,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -1960,7 +2002,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user16} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user16} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Ira Membrit</h5>
@@ -1976,7 +2018,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -1992,7 +2034,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user17} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user17} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Shonda Leer</h5>
@@ -2008,7 +2050,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2024,7 +2066,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user18} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user18} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>ock Lee</h5>
@@ -2040,7 +2082,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2056,7 +2098,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user19} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user19} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Maya Didas</h5>
@@ -2072,7 +2114,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2088,7 +2130,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Rick O'Shea</h5>
@@ -2104,7 +2146,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2120,7 +2162,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Pete Sariya</h5>
@@ -2136,7 +2178,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2152,7 +2194,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Monty Carlo</h5>
@@ -2168,7 +2210,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2184,7 +2226,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Sal Monella</h5>
@@ -2200,7 +2242,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2216,7 +2258,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user09} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user09} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Sue Vaneer</h5>
@@ -2232,7 +2274,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2248,7 +2290,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user10} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user10} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Cliff Hanger</h5>
@@ -2264,7 +2306,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2280,7 +2322,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Barb Dwyer</h5>
@@ -2296,7 +2338,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2312,7 +2354,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Terry Aki</h5>
@@ -2328,7 +2370,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2344,7 +2386,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user13} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user13} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Cory Ander</h5>
@@ -2360,7 +2402,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2376,7 +2418,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user14} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user14} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Robin Banks</h5>
@@ -2392,7 +2434,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2408,7 +2450,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user15} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user15} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Jimmy Changa</h5>
@@ -2424,7 +2466,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2440,7 +2482,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user16} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user16} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Barry Wine</h5>
@@ -2456,7 +2498,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2472,7 +2514,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user17} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user17} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Poppa Cherry</h5>
@@ -2488,7 +2530,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2504,7 +2546,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user18} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user18} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Zack Lee</h5>
@@ -2520,7 +2562,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2536,7 +2578,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user19} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user19} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Don Stairs</h5>
@@ -2552,7 +2594,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2568,7 +2610,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Peter Pants</h5>
@@ -2584,7 +2626,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2600,7 +2642,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Hal Appeno </h5>
@@ -2616,7 +2658,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2638,7 +2680,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Otto Matic</h5>
@@ -2654,7 +2696,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2670,7 +2712,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Moe Fugga</h5>
@@ -2686,7 +2728,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2702,7 +2744,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user09} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user09} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Tom Foolery</h5>
@@ -2718,7 +2760,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2734,7 +2776,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user10} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user10} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Bud Wiser</h5>
@@ -2750,7 +2792,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2766,7 +2808,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user15} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user15} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Polly Tech</h5>
@@ -2782,7 +2824,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2798,7 +2840,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user16} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user16} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Holly Graham</h5>
@@ -2814,7 +2856,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2830,7 +2872,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user17} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user17} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Tara Zona</h5>
@@ -2846,7 +2888,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2862,7 +2904,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user18} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user18} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Barry Cade</h5>
@@ -2878,7 +2920,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2900,7 +2942,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user19} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user19} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Bud Wiser</h5>
@@ -2916,7 +2958,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2932,7 +2974,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Otto Matic</h5>
@@ -2948,7 +2990,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2964,7 +3006,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Peter Pants</h5>
@@ -2980,7 +3022,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -2996,7 +3038,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Zack Lee</h5>
@@ -3012,7 +3054,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3028,7 +3070,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Barry Wine</h5>
@@ -3044,7 +3086,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3060,7 +3102,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user09} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user09} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Robin Banks</h5>
@@ -3076,7 +3118,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3092,7 +3134,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user10} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user10} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Cory Ander</h5>
@@ -3108,7 +3150,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3124,7 +3166,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user15} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user15} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Moe Fugga</h5>
@@ -3140,7 +3182,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3156,7 +3198,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user16} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user16} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Polly Tech</h5>
@@ -3172,7 +3214,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3188,7 +3230,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user17} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user17} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Hal Appeno</h5>
@@ -3204,7 +3246,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3226,7 +3268,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user18} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user18} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Paul Molive</h5>
@@ -3242,7 +3284,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3258,7 +3300,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user19} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user19} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Paige Turner</h5>
@@ -3274,7 +3316,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3290,7 +3332,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Barb Ackue</h5>
@@ -3306,7 +3348,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3322,7 +3364,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Ira Membrit</h5>
@@ -3338,7 +3380,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3354,7 +3396,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Maya Didas</h5>
@@ -3370,7 +3412,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3392,7 +3434,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Maya Didas</h5>
@@ -3408,7 +3450,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3424,7 +3466,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Monty Carlo</h5>
@@ -3440,7 +3482,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3456,7 +3498,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Cliff Hanger</h5>
@@ -3472,7 +3514,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3488,7 +3530,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>b Ackue</h5>
@@ -3504,7 +3546,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3520,7 +3562,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user09} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user09} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Bob Frapples</h5>
@@ -3536,7 +3578,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3552,7 +3594,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user10} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user10} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Anna Mull</h5>
@@ -3568,7 +3610,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3584,7 +3626,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user15} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user15} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>ry Wine</h5>
@@ -3600,7 +3642,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3616,7 +3658,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user16} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user16} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Don Stairs</h5>
@@ -3632,7 +3674,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3648,7 +3690,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user17} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user17} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Peter Pants</h5>
@@ -3664,7 +3706,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3680,7 +3722,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user18} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user18} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Polly Tech</h5>
@@ -3696,7 +3738,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3712,7 +3754,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user19} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user19} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Tara Zona</h5>
@@ -3728,7 +3770,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3744,7 +3786,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user05} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Arty Ficial</h5>
@@ -3760,7 +3802,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3776,7 +3818,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user06} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Bill Emia</h5>
@@ -3792,7 +3834,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3808,7 +3850,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user07} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Bill Yerds</h5>
@@ -3824,7 +3866,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3840,7 +3882,7 @@ const UserProfile =() =>{
                                                          <div className="d-flex align-items-center justify-content-between">
                                                             <div className="d-flex align-items-center">
                                                                <Link to="#">
-                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid"/>
+                                                                  <img loading="lazy" src={user08} alt="profile-img" className="img-fluid" />
                                                                </Link>
                                                                <div className="friend-info ms-3">
                                                                   <h5>Matt Innae</h5>
@@ -3856,7 +3898,7 @@ const UserProfile =() =>{
                                                                      Friend
                                                                   </Dropdown.Toggle>
                                                                   <Dropdown.Menu className="dropdown-menu-right" >
-                                                                     <Dropdown.Item  href="#">Get Notification</Dropdown.Item>
+                                                                     <Dropdown.Item href="#">Get Notification</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Close Friend</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfollow</Dropdown.Item>
                                                                      <Dropdown.Item href="#">Unfriend</Dropdown.Item>
@@ -3875,14 +3917,14 @@ const UserProfile =() =>{
                                  </Card.Body>
                               </Card>
                            </Tab.Container>
-                        </Tab.Pane> 
+                        </Tab.Pane>
                         <Tab.Pane eventKey="forth" >
                            <Tab.Container id="left-tabs-example" defaultActiveKey="p1">
                               <Card>
                                  <Card.Body>
                                     <h2>Photos</h2>
                                     <div className="friend-list-tab mt-2">
-                                       <Nav variant="pills"  className=" d-flex align-items-center justify-content-left friend-list-items p-0 mb-2">
+                                       <Nav variant="pills" className=" d-flex align-items-center justify-content-left friend-list-items p-0 mb-2">
                                           <li>
                                              <Nav.Link eventKey="p1" href="#pill-photosofyou">Photos of You</Nav.Link>
                                           </li>
@@ -3897,7 +3939,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(10)} to="#">
-                                                            <img loading="lazy" src={img51} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img51} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -3905,8 +3947,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -3918,7 +3960,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(11)} to="#">
-                                                            <img loading="lazy" src={img52} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img52} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -3926,8 +3968,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -3939,7 +3981,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(12)} to="#">
-                                                            <img loading="lazy" src={img53} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img53} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -3947,8 +3989,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -3960,7 +4002,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(13)} to="#">
-                                                            <img loading="lazy" src={img54} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img54} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -3968,8 +4010,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -3981,7 +4023,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(14)} to="#">
-                                                            <img loading="lazy" src={img55} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img55} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -3989,8 +4031,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4002,7 +4044,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(15)} to="#">
-                                                            <img loading="lazy" src={img56} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img56} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4010,8 +4052,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4023,7 +4065,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(16)} to="#">
-                                                            <img loading="lazy" src={img57} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img57} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4031,8 +4073,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4044,7 +4086,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(17)} to="#">
-                                                            <img loading="lazy" src={img58} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img58} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4052,8 +4094,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4065,7 +4107,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(18)} to="#">
-                                                            <img loading="lazy" src={img59} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img59} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4073,8 +4115,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4086,7 +4128,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(19)} to="#">
-                                                            <img loading="lazy" src={img60} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img60} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4094,8 +4136,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4107,7 +4149,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(20)} to="#">
-                                                            <img loading="lazy" src={img61} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img61} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4115,8 +4157,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4128,7 +4170,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(21)} to="#">
-                                                            <img loading="lazy" src={img62} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img62} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4136,8 +4178,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4149,7 +4191,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(22)} to="#">
-                                                            <img loading="lazy" src={img63} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img63} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4157,8 +4199,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4170,7 +4212,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(23)} to="#">
-                                                            <img loading="lazy" src={img64} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img64} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4178,8 +4220,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4191,7 +4233,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(24)} to="#">
-                                                            <img loading="lazy" src={img65} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img65} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4199,8 +4241,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4212,7 +4254,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(25)} to="#">
-                                                            <img loading="lazy" src={img51} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img51} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4220,8 +4262,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4233,7 +4275,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(26)} to="#">
-                                                            <img loading="lazy" src={img52} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img52} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4241,8 +4283,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4254,7 +4296,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(27)} to="#">
-                                                            <img loading="lazy" src={img53} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img53} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4262,8 +4304,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4275,7 +4317,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(28)} to="#">
-                                                            <img loading="lazy" src={img54} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img54} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4283,8 +4325,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4296,7 +4338,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(29)} to="#">
-                                                            <img loading="lazy" src={img55} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img55} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4304,8 +4346,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4317,7 +4359,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(30)} to="#">
-                                                            <img loading="lazy" src={img56} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img56} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4325,8 +4367,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4338,7 +4380,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(31)} to="#">
-                                                            <img loading="lazy" src={img57} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img57} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4346,8 +4388,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4359,7 +4401,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(32)} to="#">
-                                                            <img loading="lazy" src={img58} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img58} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4367,8 +4409,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4383,10 +4425,10 @@ const UserProfile =() =>{
                                           <Tab.Pane eventKey="p2">
                                              <div className="card-body p-0">
                                                 <div className="d-grid gap-2 d-grid-template-1fr-13 ">
-                                                <div>
+                                                   <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(33)} to="#">
-                                                            <img loading="lazy" src={img51} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img51} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4394,8 +4436,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4407,7 +4449,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(34)} to="#">
-                                                            <img loading="lazy" src={img52} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img52} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4415,8 +4457,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4428,7 +4470,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(35)} to="#">
-                                                            <img loading="lazy" src={img53} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img53} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4436,8 +4478,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4449,7 +4491,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(36)} to="#">
-                                                            <img loading="lazy" src={img54} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img54} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4457,8 +4499,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4470,7 +4512,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(37)} to="#">
-                                                            <img loading="lazy" src={img55} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img55} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4478,8 +4520,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4491,7 +4533,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(38)} to="#">
-                                                            <img loading="lazy" src={img56} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img56} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4499,8 +4541,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4512,7 +4554,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(39)} to="#">
-                                                            <img loading="lazy" src={img57} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img57} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4520,8 +4562,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4533,7 +4575,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(40)} to="#">
-                                                            <img loading="lazy" src={img58} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img58} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4541,8 +4583,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4554,7 +4596,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(41)} to="#">
-                                                            <img loading="lazy" src={img59} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img59} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4562,8 +4604,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4575,7 +4617,7 @@ const UserProfile =() =>{
                                                    <div>
                                                       <div className="user-images position-relative overflow-hidden">
                                                          <Link onClick={() => imageOnSlide(42)} to="#">
-                                                            <img loading="lazy" src={img60} className="img-fluid rounded" alt="Responsive"/>
+                                                            <img loading="lazy" src={img60} className="img-fluid rounded" alt="Responsive" />
                                                          </Link>
                                                          <div className="image-hover-data">
                                                             <div className="product-elements-icon">
@@ -4583,8 +4625,8 @@ const UserProfile =() =>{
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 60 <i className="material-symbols-outlined md-14 ms-1">thumb_up</i> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 30 <span className="material-symbols-outlined  md-14 ms-1">chat_bubble_outline</span> </Link></li>
                                                                   <li><Link to="#" className="pe-3 text-white d-flex align-items-center"> 10 <span className="material-symbols-outlined md-14 ms-1">
-                                                      forward
-                                                      </span> </Link></li>
+                                                                     forward
+                                                                  </span> </Link></li>
                                                                </ul>
                                                             </div>
                                                          </div>
@@ -4603,15 +4645,15 @@ const UserProfile =() =>{
                            </Tab.Container>
                         </Tab.Pane>
                         <div className="col-sm-12 text-center">
-                           <img loading="lazy" src={loader} alt="loader" style={{height: "100px"}} />
+                           <img loading="lazy" src={loader} alt="loader" style={{ height: "100px" }} />
                         </div>
                      </Tab.Content>
                   </Col>
                </Tab.Container>
             </Row>
-         </Container>   
+         </Container>
       </>
-  )
+   )
 
 }
 

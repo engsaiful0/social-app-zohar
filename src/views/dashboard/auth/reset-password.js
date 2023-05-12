@@ -28,6 +28,8 @@ const ResetPassword = () => {
    };
    const navigate = useNavigate();
    const user_id = Cookies.get("user_id");
+   const email = Cookies.get("email");
+   
    // form validation rules 
    const validationSchema = Yup.object().shape({
       password: Yup.string()
@@ -47,6 +49,7 @@ const ResetPassword = () => {
       api_key: '',
       user_id: '',
       otp: '',
+      email: '',
       password: '',
       confirm_password: '',
    });
@@ -75,6 +78,7 @@ const ResetPassword = () => {
       console.log(FormData);
       formDataObj.append('api_key', API_KEY);
       formDataObj.append('user_id', user_id);
+      formDataObj.append('email', email);
       formDataObj.append('otp', formData.otp);
       formDataObj.append('password', formData.password);
       formDataObj.append('confirm_password', formData.confirm_password);
@@ -94,6 +98,7 @@ const ResetPassword = () => {
                setFormData({
                   api_key: '',
                   user_id: '',
+                  email: '',
                   otp: '',
                   password: '',
                   confirm_password: '',

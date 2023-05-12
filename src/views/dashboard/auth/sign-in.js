@@ -78,7 +78,6 @@ const SignIn = () => {
             data: formDataObj
          }).then(function (response) {
             //handle success
-        
             if (response.data.status == 200) {
                Cookies.set("user_id", response.data.user.user_id);
                Cookies.set("token", response.data.user.token);

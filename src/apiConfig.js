@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   VERIFY_OTP: '/users/verify_otp',
   RECOVER: '/users/recover',
   RESETPASSWORD: '/users/setpassword',
+  USER_PROFILE: '/users/user_profile',
 };
 
 export const getApiUrl = (endpoint) => `${BASE_URL}${endpoint}`;

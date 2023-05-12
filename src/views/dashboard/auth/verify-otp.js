@@ -12,20 +12,26 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-
+import Notification from '../../../notification';
 
 const VerifyOTP = () => {
-   
+
    const [inputValue, setInputValue] = useState('');
    const maxLength = 6;
- 
+
    const handleInput = (e) => {
-     let { value } = e.target;
-     if (value.length <= maxLength) {
-       setInputValue(value);
-     }
+      let { value } = e.target;
+      if (value.length <= maxLength) {
+         setInputValue(value);
+      }
    };
- const user_hash=Cookies.get('user_hash');
+   const user_hash = Cookies.get('user_hash');
+   const notification = Cookies.get('notification');
+   toast.success(notification, {
+      position: toast.POSITION.TOP_RIGHT
+   });
+   Cookies.remove('notification');
+   console.log(notification);
 
    const navigate = useNavigate();
 
@@ -80,7 +86,7 @@ const VerifyOTP = () => {
             //handle success
             console.log(response.data.status);
             if (response.data.status == 200) {
-               toast.success('OTP is verified successfully!', {
+               toast.success(response.data.message, {
                   position: toast.POSITION.TOP_RIGHT
                });
                navigate('/auth/sign-in');; //To redirect to the user's login page
@@ -91,7 +97,7 @@ const VerifyOTP = () => {
                });//clear the form feild after data save
             }
             if (response.data.status == 500) {
-               toast.error('OTP may be wrong!!! Try again later!', {
+               toast.error(response.data.message, {
                   position: toast.POSITION.TOP_RIGHT
                });
             }
@@ -106,6 +112,7 @@ const VerifyOTP = () => {
    return (
       <>
          <ToastContainer />
+
          <section className="sign-in-page">
             <div id="container-inside">
                <div id="circle-small"></div>

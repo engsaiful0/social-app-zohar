@@ -15,10 +15,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import Cookies from 'js-cookie';
-
-
-
-
 const SignUp = () => {
    const navigate = useNavigate();
    const validateForm = async () => {
@@ -113,6 +109,9 @@ const SignUp = () => {
 
    const handleChange = (e) => {
       const { name, value } = e.target;
+      const isValid = validationSchema.isValidSync(e);
+      setError(!isValid);
+
       setFormData(prevState => ({ ...prevState, [name]: value }));
       validateForm();
    }
@@ -166,8 +165,10 @@ const SignUp = () => {
                   day: '',
                   termsAndConditions: false
                });//clear the form feild after data save
-               console.log(response.data.user_hash);
-               Cookies.set("user_hash", response.data.user_hash);
+               console.log(response.data.data.user_hash);
+               Cookies.set("user_hash", response.data.data.user_hash);
+               
+               
                navigate('/auth/verify-otp');
             }
             if (response.data.status == 500) {
@@ -186,6 +187,7 @@ const SignUp = () => {
    return (
       <>
          <ToastContainer />
+      
          <section className="sign-in-page">
             <div id="container-inside">
                <div id="circle-small"></div>

@@ -10,6 +10,7 @@ export const API_ENDPOINTS = {
   RECOVER: '/users/recover',
   RESETPASSWORD: '/users/setpassword',
   USER_PROFILE: '/users/user_profile',
+  CREATE_POST: '/member/create_post',
 };
 
 export const getApiUrl = (endpoint) => `${BASE_URL}${endpoint}`;

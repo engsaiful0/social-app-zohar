@@ -97,9 +97,9 @@ const Index = () => {
         const formDataObj = new FormData();
         console.log(FormData);
         formDataObj.append('api_key', API_KEY);
-        formDataObj.append('token', token);
-        formDataObj.append('description', formData.description);
-        formDataObj.append('privacy_code', formData.privacy_code);
+        formDataObj.append('token', formData.first_name);
+        formDataObj.append('description', formData.last_name);
+        formDataObj.append('privacy_code', formData.email);
         try {
             axios({
                 url: getApiUrl(API_ENDPOINTS.CREATE_POST),
@@ -109,7 +109,6 @@ const Index = () => {
                 //handle success
                 console.log(response.data.status);
                 if (response.data.status == 200) {
-                    setShow(false);//To close the modal
                     Cookies.set("notification", response.data.message);
                     toast.success(response.data.message, {
                         position: toast.POSITION.TOP_RIGHT
@@ -177,12 +176,26 @@ const Index = () => {
                                             <div className="user-img">
                                                 <img src={user1} alt="user1" className="avatar-60 rounded-circle" />
                                             </div>
-
-
-                                            <input data-bs-toggle="modal" onClick={handleShow} type="text"  className="form-control rounded" placeholder="Write something here..." style={{ border: "none" }} />
-                                          
-
-
+                                            <Form className="post-text ms-3 w-100 " data-bs-toggle="modal" onSubmit={handleSubmit(onSubmit)} onClick={handleShow}>
+                                                {/* <Row> */}
+                                                    {/* <Col lg="10"> */}
+                                                        <input type="text" id='description' {...register('description')} value={formData.description} onChange={handleChange} name='description' className="form-control rounded" placeholder="Write something here..." style={{ border: "none" }} />
+                                                        <div >{errors.description?.message}</div>
+                                                    {/* </Col> */}
+                                                    {/* <Col lg="2"> */}
+                                                        {/* <Form.Control
+                                                            as="select"
+                                                            name="privacy_code"
+                                                            value={formData.privacy_code}
+                                                            onChange={handleChange}
+                                                        >
+                                                            <option value="2">Public</option>
+                                                            <option value="0">Only Me</option>
+                                                            <option value="1">Connections</option>
+                                                        </Form.Control> */}
+                                                    {/* </Col> */}
+                                                {/* </Row> */}
+                                            </Form>
                                         </div>
                                         <hr></hr>
                                         <ul className=" post-opt-block d-flex list-inline m-0 p-0 flex-wrap">
@@ -230,56 +243,44 @@ const Index = () => {
                                             </Link>
                                         </Modal.Header>
                                         <Modal.Body>
-                                            <Form onSubmit={handleSubmit(onSubmit)} className="post-text ms-3 w-100 " data-bs-toggle="modal" data-bs-target="#post-modal">
-                                                <div className="d-flex align-items-center">
-                                                    <div className="user-img">
-                                                        <img src={user1} alt="user1" className="avatar-60 rounded-circle img-fluid" />
-                                                    </div>
-                                                    <input data-bs-toggle="modal" onClick={handleShow} type="text" id='description' {...register('description')} value={formData.description} onChange={handleChange} name='description' className="form-control rounded" placeholder="Write something here..." style={{ border: "none" }} />
-                                                    <div >{errors.description?.message}</div>
+                                            <div className="d-flex align-items-center">
+                                                <div className="user-img">
+                                                    <img src={user1} alt="user1" className="avatar-60 rounded-circle img-fluid" />
                                                 </div>
-                                                <hr />
-                                                <ul className="d-flex flex-wrap align-items-center list-inline m-0 p-0">
-                                                    <li className="col-md-6 mb-3">
-                                                        <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
-                                                            <img src={img1} alt="icon" className="img-fluid" /> Photo/Video</div>
-                                                    </li>
-                                                    <li className="col-md-6 mb-3">
-                                                        <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
-                                                            <img src={img2} alt="icon" className="img-fluid" /> Tag Friend</div>
-                                                    </li>
-                                                    <li className="col-md-6 mb-3">
-                                                        <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
-                                                            <img src={img3} alt="icon" className="img-fluid" /> Feeling/Activity</div>
-                                                    </li>
-                                                    <li className="col-md-6 mb-3">
-                                                        <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
-                                                            <img src={img4} alt="icon" className="img-fluid" /> Check in</div>
-                                                    </li>
-                                                    <li className="col-md-6 mb-3">
-                                                        <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
-                                                            <img src={img5} alt="icon" className="img-fluid" /> Live Video</div>
-                                                    </li>
-                                                    <li className="col-md-6 mb-3">
-                                                        <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
-                                                            <img src={img6} alt="icon" className="img-fluid" /> Gif</div>
-                                                    </li>
-                                                    <li className="col-md-6 mb-3">
-                                                        <Form.Control
-                                                            as="select"
-                                                            name="privacy_code"                                
-                                                            onChange={handleChange}
-                                                        >
-                                                            <option value="2">Public</option>
-                                                            <option value="0">Only Me</option>
-                                                            <option value="1">Connections</option>
-                                                        </Form.Control>
-                                                    </li>
+                                                <form className="post-text ms-3 w-100 " data-bs-toggle="modal" data-bs-target="#post-modal">
+                                                    <input type="text" className="form-control rounded" placeholder="Write something here..." style={{ border: "none" }} />
+                                                </form>
+                                            </div>
+                                            <hr />
+                                            <ul className="d-flex flex-wrap align-items-center list-inline m-0 p-0">
+                                                <li className="col-md-6 mb-3">
+                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
+                                                        <img src={img1} alt="icon" className="img-fluid" /> Photo/Video</div>
+                                                </li>
+                                                <li className="col-md-6 mb-3">
+                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
+                                                        <img src={img2} alt="icon" className="img-fluid" /> Tag Friend</div>
+                                                </li>
+                                                <li className="col-md-6 mb-3">
+                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
+                                                        <img src={img3} alt="icon" className="img-fluid" /> Feeling/Activity</div>
+                                                </li>
+                                                <li className="col-md-6 mb-3">
+                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
+                                                        <img src={img4} alt="icon" className="img-fluid" /> Check in</div>
+                                                </li>
+                                                <li className="col-md-6 mb-3">
+                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
+                                                        <img src={img5} alt="icon" className="img-fluid" /> Live Video</div>
+                                                </li>
+                                                <li className="col-md-6 mb-3">
+                                                    <div className="bg-soft-primary rounded p-2 pointer me-3"><Link to="#"></Link>
+                                                        <img src={img6} alt="icon" className="img-fluid" /> Gif</div>
+                                                </li>
 
-                                                </ul>
-                                                <hr />
-                                                <button type="submit" className="btn btn-primary d-block w-100 mt-3">Post</button>
-                                            </Form>
+                                            </ul>
+                                            <hr />
+                                            <button type="submit" className="btn btn-primary d-block w-100 mt-3">Post</button>
                                         </Modal.Body>
                                     </Modal>
                                 </Card>

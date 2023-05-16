@@ -14,6 +14,7 @@ import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 //image
 import user1 from '../../assets/images/user/1.jpg'
 import user01 from '../../assets/images/user/01.jpg'
@@ -52,7 +53,8 @@ import loader from '../../assets/images/page-img/page-load-loader.gif'
 
 
 const Index = () => {
-
+    
+    const [isLoading, setIsLoading] = useState(false);
     const token = Cookies.get("token");
     let navigate = useNavigate();
     useEffect(() => {
@@ -93,9 +95,9 @@ const Index = () => {
 
     const [error, setError] = useState(null);
     const onSubmit = (data) => {
-        // e.preventDefault();
+        setIsLoading(true);
         const formDataObj = new FormData();
-        console.log(FormData);
+        //console.log(FormData);
         formDataObj.append('api_key', API_KEY);
         formDataObj.append('token', token);
         formDataObj.append('description', formData.description);
@@ -128,6 +130,8 @@ const Index = () => {
                         position: toast.POSITION.TOP_RIGHT
                     });
                 }
+                setIsLoading(false);
+                
             }).catch(function (response) {
                 //handle error
                 console.log(response);
@@ -278,7 +282,10 @@ const Index = () => {
 
                                                 </ul>
                                                 <hr />
-                                                <button type="submit" className="btn btn-primary d-block w-100 mt-3">Post</button>
+                                                <button type="submit" disabled={isLoading} className="btn btn-primary d-block w-100 mt-3">
+                                                {isLoading ? 'Posting...' : 'Post'}
+                                                </button>
+
                                             </Form>
                                         </Modal.Body>
                                     </Modal>

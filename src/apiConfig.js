@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
   PROFILE_UPDATE: '/users/profile_update',
   HASHTAG: '/member/findhastag',
   CREATE_POST: '/member/create_post',
+  USER_POST: '/member/user_posts',
 };
 
 export const getApiUrl = (endpoint) => `${BASE_URL}${endpoint}`;

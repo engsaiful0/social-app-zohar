@@ -93,7 +93,6 @@ const UserProfile = () => {
    const handleClose = () => setShow(false);
    const handleShow = () => setShow(true);
    const [first_name, setUserData] = useState(null);
-
    const token = Cookies.get('token');
 
    const [imageController, setImageController] = useState({
@@ -107,7 +106,47 @@ const UserProfile = () => {
          slide: number
       });
    }
+
+   /*Create Post api implementation is started from here*/
+   const [userPosts, setPosts] = useState([]);
+
    useEffect(() => {
+      fetchPosts();
+   }, []);
+
+   const fetchPosts = async () => {
+      try {
+         const formDataObj = new FormData();
+         console.log(FormData);
+         formDataObj.append('api_key', API_KEY);
+         formDataObj.append('token', token);
+         formDataObj.append('offset', 0);
+         axios({
+            url: getApiUrl(API_ENDPOINTS.USER_POST),
+            method: 'POST',
+            data: formDataObj
+         }).then(function (response) {
+            if (response.data.status == 200) {
+               console.log(response.data);
+               setPosts(response.data.data);
+               console.log("Posts Array");
+               console.log(response.data);
+            }
+         }).catch(function (response) {
+            //handle error
+            console.error(response);
+
+         });
+      } catch (error) {
+         console.error('Error fetching posts:', error);
+      }
+   };
+
+   /*Create Post api implementation is ended here*/
+
+   /*Profile api*/
+   useEffect(() => {
+
       try {
          const formDataObj = new FormData();
          console.log(FormData);
@@ -119,15 +158,6 @@ const UserProfile = () => {
             data: formDataObj
          }).then(function (response) {
             //handle success
-           
-            // Cookies.set("first_name", response.first_name);
-            // Cookies.set("last_name", response.last_name);
-            // Cookies.set("gender", response.gender);
-            // Cookies.set("about", response.about);
-            // Cookies.set("date_of_birth", response.date_of_birth);
-            // Cookies.set("facebook_profile_link", response.facebook_profile_link);
-            // Cookies.set("about", response.about);
-            // Cookies.set("date_of_birth", response.date_of_birth);
             if (response.data.status == 200) {
                setUserData(response.data.data.first_name);
                console.log(response.data.data.first_name);
@@ -137,10 +167,11 @@ const UserProfile = () => {
             console.log(response);
          });
       } catch (err) {
-   
+
       }
-    }, []);
-   
+   }, []);
+   /*Profile Api is ended here*/
+
    return (
       <>
          <FsLightbox
@@ -178,7 +209,7 @@ const UserProfile = () => {
                               </div>
                               <div className="profile-detail">
                                  <h3>
-                                 {first_name}                              
+                                    {first_name}
                                  </h3>
                               </div>
                            </div>
@@ -519,716 +550,39 @@ const UserProfile = () => {
                                     </Card>
                                     <Card>
                                        <Card.Body>
-                                          <div className="post-item">
-                                             <div className="user-post-data pb-3">
-                                                <div className="d-flex justify-content-between">
-                                                   <div className="me-3">
-                                                      <img loading="lazy" className="rounded-circle  avatar-60" src={user1} alt="" />
-                                                   </div>
-                                                   <div className="w-100">
-                                                      <div className="d-flex justify-content-between flex-wrap">
+                                          {  
+                                          
+                                          userPosts.map(post => (
+                                             <div className="post-item">
+                                                <div className="user-post-data pb-3">
+                                                   <div className="d-flex justify-content-between">
+                                                      <div className="me-3">
+                                                         <img loading="lazy" className="rounded-circle  avatar-60" src={user1} alt="" />
+                                                      </div>
+                                                      <div className="w-100">
+                                                         <div className="d-flex justify-content-between flex-wrap">
                                                          <div>
-                                                            <h5 className="mb-0 d-inline-block"><Link to="#">Bni Cyst</Link></h5>
-                                                            <p className="ms-1 mb-0 d-inline-block">Add New Post</p>
-                                                            <p className="mb-0">3 hour ago</p>
+                                                            <h5 className="mb-0 d-inline-block"><Link to="#">{first_name}</Link></h5>
+                                                            {/* <p className="ms-1 mb-0 d-inline-block">Add New Post</p> */}
+                                                            <p className="mb-0"> {post.created_on}</p>
                                                          </div>
-                                                         <div className="card-post-toolbar">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle className="bg-transparent border-white">
-                                                                  <span className="material-symbols-outlined">
-                                                                     more_horiz
-                                                                  </span>
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu className=" m-0 p-0">
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-save-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Save Post</h6>
-                                                                           <p className="mb-0">Add this to your saved items</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-pencil-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Edit Post</h6>
-                                                                           <p className="mb-0">Update your post and saved items</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-close-circle-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Hide From Timeline</h6>
-                                                                           <p className="mb-0">See fewer posts like this.</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-delete-bin-7-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Delete</h6>
-                                                                           <p className="mb-0">Remove thids Post on Timeline</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-notification-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Notifications</h6>
-                                                                           <p className="mb-0">Turn on notifications for this post</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
+                                                        
                                                          </div>
                                                       </div>
                                                    </div>
                                                 </div>
-                                             </div>
-                                             <div className="user-post">
-                                                <Link to="#"><img loading="lazy" src={p1} alt="post" className="img-fluid w-100" /></Link>
-                                             </div>
-                                             <div className="comment-area mt-3">
-                                                <div className="d-flex justify-content-between align-items-center flex-wrap">
-                                                   <div className="like-block position-relative d-flex align-items-center">
-                                                      <div className="d-flex align-items-center">
-                                                         <div className="like-data">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle} >
-                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt="" />
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu className=" py-2">
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
-                                                         </div>
-                                                         <div className="total-like-block ms-2 me-3">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle} id="post-option" >
-                                                                  140 Likes
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu>
-                                                                  <Dropdown.Item to="#">Max Emum</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Other</Dropdown.Item>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
-                                                         </div>
-                                                      </div>
-                                                      <div className="total-comment-block">
-                                                         <Dropdown>
-                                                            <Dropdown.Toggle as={CustomToggle} id="post-option" >
-                                                               20 Comment
-                                                            </Dropdown.Toggle>
-                                                            <Dropdown.Menu>
-                                                               <Dropdown.Item to="#">Max Emum</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Other</Dropdown.Item>
-                                                            </Dropdown.Menu>
-                                                         </Dropdown>
-                                                      </div>
-                                                   </div>
-                                                   <ShareOffcanvas />
+                                                <div className="user-post">
+                                                {post.post_details}
                                                 </div>
-                                                <hr />
-                                                <ul className="post-comments p-0 m-0">
-                                                   <li className="mb-2">
-                                                      <div className="d-flex flex-wrap">
-                                                         <div className="user-img">
-                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                                         </div>
-                                                         <div className="comment-data-block ms-3">
-                                                            <h6>Monty Carlo</h6>
-                                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                                               <Link to="#">like</Link>
-                                                               <Link to="#">reply</Link>
-                                                               <Link to="#">translate</Link>
-                                                               <span> 5 min </span>
-                                                            </div>
-                                                         </div>
-                                                      </div>
-                                                   </li>
-                                                   <li>
-                                                      <div className="d-flex flex-wrap">
-                                                         <div className="user-img">
-                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                                         </div>
-                                                         <div className="comment-data-block ms-3">
-                                                            <h6>Paul Molive</h6>
-                                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                                               <Link to="#">like</Link>
-                                                               <Link to="#">reply</Link>
-                                                               <Link to="#">translate</Link>
-                                                               <span> 5 min </span>
-                                                            </div>
-                                                         </div>
-                                                      </div>
-                                                   </li>
-                                                </ul>
-                                                <form className="comment-text d-flex align-items-center mt-3" >
-                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
-                                                   <div className="comment-attagement d-flex">
-                                                      <Link to="#" className="material-symbols-outlined me-3 link">insert_link</Link>
-                                                      <Link to="#" className="material-symbols-outlined  me-3">sentiment_satisfied</Link>
-                                                      <Link to="#" className="material-symbols-outlined  me-3">photo_camera</Link>
-                                                   </div>
-                                                </form>
+                                                
                                              </div>
-                                          </div>
-                                          <div className="post-item">
-                                             <div className="user-post-data py-3">
-                                                <div className="d-flex  justify-content-between">
-                                                   <div className="me-3">
-                                                      <img loading="lazy" className="rounded-circle  avatar-60" src={user1} alt="" />
-                                                   </div>
-                                                   <div className="w-100">
-                                                      <div className="d-flex justify-content-between">
-                                                         <div>
-                                                            <h5 className="mb-0 d-inline-block me-1"><Link to="#">Bni Cyst</Link></h5>
-                                                            <p className="mb-0 d-inline-block">Share Anna Mull's Post</p>
-                                                            <p className="mb-0">5 hour ago</p>
-                                                         </div>
-                                                         <div className="card-post-toolbar">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle className="bg-transparent border-white">
-                                                                  <i className="ri-more-fill"></i>
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu className=" m-0 p-0">
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-save-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Save Post</h6>
-                                                                           <p className="mb-0">Add this to your saved items</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-pencil-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Edit Post</h6>
-                                                                           <p className="mb-0">Update your post and saved items</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-close-circle-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Hide From Timeline</h6>
-                                                                           <p className="mb-0">See fewer posts like this.</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-delete-bin-7-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Delete</h6>
-                                                                           <p className="mb-0">Remove thids Post on Timeline</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-notification-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Notifications</h6>
-                                                                           <p className="mb-0">Turn on notifications for this post</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
-                                                         </div>
-                                                      </div>
-                                                   </div>
-                                                </div>
-                                             </div>
-                                             <div className="user-post">
-                                                <Link to="#"><img loading="lazy" src={p3} alt="post" className="img-fluid w-100" /></Link>
-                                             </div>
-                                             <div className="comment-area mt-3">
-                                                <div className="d-flex justify-content-between align-items-center flex-wrap">
-                                                   <div className="like-block position-relative d-flex align-items-center">
-                                                      <div className="d-flex align-items-center">
-                                                         <div className="like-data">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle} >
-                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt="" />
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu className=" py-2">
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
-                                                         </div>
-                                                         <div className="total-like-block ms-2 me-3">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle} id="post-option" >
-                                                                  140 Likes
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu>
-                                                                  <Dropdown.Item to="#">Max Emum</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Other</Dropdown.Item>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
-                                                         </div>
-                                                      </div>
-                                                      <div className="total-comment-block">
-                                                         <Dropdown>
-                                                            <Dropdown.Toggle as={CustomToggle} id="post-option" >
-                                                               20 Comment
-                                                            </Dropdown.Toggle>
-                                                            <Dropdown.Menu>
-                                                               <Dropdown.Item to="#">Max Emum</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Other</Dropdown.Item>
-                                                            </Dropdown.Menu>
-                                                         </Dropdown>
-                                                      </div>
-                                                   </div>
-                                                   <ShareOffcanvas />
-                                                </div>
-                                                <hr />
-                                                <ul className="post-comments p-0 m-0">
-                                                   <li className="mb-2">
-                                                      <div className="d-flex flex-wrap">
-                                                         <div className="user-img">
-                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                                         </div>
-                                                         <div className="comment-data-block ms-3">
-                                                            <h6>Monty Carlo</h6>
-                                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                                               <Link to="#">like</Link>
-                                                               <Link to="#">reply</Link>
-                                                               <Link to="#">translate</Link>
-                                                               <span> 5 min </span>
-                                                            </div>
-                                                         </div>
-                                                      </div>
-                                                   </li>
-                                                   <li>
-                                                      <div className="d-flex flex-wrap">
-                                                         <div className="user-img">
-                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                                         </div>
-                                                         <div className="comment-data-block ms-3">
-                                                            <h6>Paul Molive</h6>
-                                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                                               <Link to="#">like</Link>
-                                                               <Link to="#">reply</Link>
-                                                               <Link to="#">translate</Link>
-                                                               <span> 5 min </span>
-                                                            </div>
-                                                         </div>
-                                                      </div>
-                                                   </li>
-                                                </ul>
-                                                <form className="comment-text d-flex align-items-center mt-3" >
-                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
-                                                   <div className="comment-attagement d-flex">
-                                                      <Link to="#" className="material-symbols-outlined me-3 link">insert_link</Link>
-                                                      <Link to="#" className="material-symbols-outlined  me-3">sentiment_satisfied</Link>
-                                                      <Link to="#" className="material-symbols-outlined  me-3">photo_camera</Link>
-                                                   </div>
-                                                </form>
-                                             </div>
-                                          </div>
-                                          <div className="post-item">
-                                             <div className="user-post-data py-3">
-                                                <div className="d-flex justify-content-between">
-                                                   <div className="me-3">
-                                                      <img loading="lazy" className="rounded-circle avatar-60" src={user1} alt="" />
-                                                   </div>
-                                                   <div className="w-100">
-                                                      <div className="d-flex justify-content-between">
-                                                         <div>
-                                                            <h5 className="mb-0 d-inline-block"><Link to="#">Bni Cyst</Link></h5>
-                                                            <p className="ms-1 mb-0 d-inline-block">Update his Status</p>
-                                                            <p className="mb-0">7 hour ago</p>
-                                                         </div>
-                                                         <div className="card-post-toolbar">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle className="bg-transparent border-white">
-                                                                  <i className="ri-more-fill"></i>
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu className=" m-0 p-0">
-                                                                  <Dropdown.Item className="p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-save-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Save Post</h6>
-                                                                           <p className="mb-0">Add this to your saved items</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className="p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-pencil-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Edit Post</h6>
-                                                                           <p className="mb-0">Update your post and saved items</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className="p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-close-circle-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Hide From Timeline</h6>
-                                                                           <p className="mb-0">See fewer posts like this.</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className="dropdown-item p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-delete-bin-7-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Delete</h6>
-                                                                           <p className="mb-0">Remove thids Post on Timeline</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className="p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-notification-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Notifications</h6>
-                                                                           <p className="mb-0">Turn on notifications for this post</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
-                                                         </div>
-                                                      </div>
-                                                   </div>
-                                                </div>
-                                             </div>
-                                             <div className="user-post">
-                                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,</p>
-                                             </div>
-                                             <div className="comment-area mt-3">
-                                                <div className="d-flex justify-content-between align-items-center flex-wrap">
-                                                   <div className="like-block position-relative d-flex align-items-center">
-                                                      <div className="d-flex align-items-center">
-                                                         <div className="like-data">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle} >
-                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt="" />
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu className=" py-2">
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
-                                                         </div>
-                                                         <div className="total-like-block ms-2 me-3">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle} id="post-option" >
-                                                                  140 Likes
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu>
-                                                                  <Dropdown.Item to="#">Max Emum</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Other</Dropdown.Item>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
-                                                         </div>
-                                                      </div>
-                                                      <div className="total-comment-block">
-                                                         <Dropdown>
-                                                            <Dropdown.Toggle as={CustomToggle} id="post-option" >
-                                                               20 Comment
-                                                            </Dropdown.Toggle>
-                                                            <Dropdown.Menu>
-                                                               <Dropdown.Item to="#">Max Emum</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Other</Dropdown.Item>
-                                                            </Dropdown.Menu>
-                                                         </Dropdown>
-                                                      </div>
-                                                   </div>
-                                                   <ShareOffcanvas />
-                                                </div>
-                                                <hr />
-                                                <ul className="post-comments p-0 m-0">
-                                                   <li className="mb-2">
-                                                      <div className="d-flex flex-wrap">
-                                                         <div className="user-img">
-                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                                         </div>
-                                                         <div className="comment-data-block ms-3">
-                                                            <h6>Monty Carlo</h6>
-                                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                                               <Link to="#">like</Link>
-                                                               <Link to="#">reply</Link>
-                                                               <Link to="#">translate</Link>
-                                                               <span> 5 min </span>
-                                                            </div>
-                                                         </div>
-                                                      </div>
-                                                   </li>
-                                                   <li>
-                                                      <div className="d-flex flex-wrap">
-                                                         <div className="user-img">
-                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                                         </div>
-                                                         <div className="comment-data-block ms-3">
-                                                            <h6>Paul Molive</h6>
-                                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                                               <Link to="#">like</Link>
-                                                               <Link to="#">reply</Link>
-                                                               <Link to="#">translate</Link>
-                                                               <span> 5 min </span>
-                                                            </div>
-                                                         </div>
-                                                      </div>
-                                                   </li>
-                                                </ul>
-                                                <form className="comment-text d-flex align-items-center mt-3" >
-                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
-                                                   <div className="comment-attagement d-flex">
-                                                      <Link to="#" className="material-symbols-outlined me-3 link">insert_link</Link>
-                                                      <Link to="#" className="material-symbols-outlined  me-3">sentiment_satisfied</Link>
-                                                      <Link to="#" className="material-symbols-outlined  me-3">photo_camera</Link>
-                                                   </div>
-                                                </form>
-                                             </div>
-                                          </div>
-                                          <div className="post-item">
-                                             <div className="user-post-data py-3">
-                                                <div className="d-flex justify-content-between">
-                                                   <div className=" me-3">
-                                                      <img loading="lazy" className="rounded-circle avatar-60" src={user1} alt="" />
-                                                   </div>
-                                                   <div className="w-100">
-                                                      <div className="d-flex justify-content-between">
-                                                         <div>
-                                                            <h5 className="mb-0 d-inline-block me-1"><Link to="#">Bni Cyst</Link></h5>
-                                                            <p className=" mb-0 d-inline-block">Change Profile Picture</p>
-                                                            <p className="mb-0">3 day ago</p>
-                                                         </div>
-                                                         <div className="card-post-toolbar">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle className="bg-transparent border-white">
-                                                                  <i className="ri-more-fill"></i>
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu className=" m-0 p-0">
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-save-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Save Post</h6>
-                                                                           <p className="mb-0">Add this to your saved items</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-pencil-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Edit Post</h6>
-                                                                           <p className="mb-0">Update your post and saved items</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-close-circle-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Hide From Timeline</h6>
-                                                                           <p className="mb-0">See fewer posts like this.</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-delete-bin-7-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Delete</h6>
-                                                                           <p className="mb-0">Remove thids Post on Timeline</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                                  <Dropdown.Item className=" p-3" to="#">
-                                                                     <div className="d-flex align-items-top">
-                                                                        <i className="ri-notification-line h4"></i>
-                                                                        <div className="data ms-2">
-                                                                           <h6>Notifications</h6>
-                                                                           <p className="mb-0">Turn on notifications for this post</p>
-                                                                        </div>
-                                                                     </div>
-                                                                  </Dropdown.Item>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
-                                                         </div>
-                                                      </div>
-                                                   </div>
-                                                </div>
-                                             </div>
-                                             <div className="user-post text-center">
-                                                <Link to="#"><img loading="lazy" src={p1} alt="post" className="img-fluid profile-img" /></Link>
-                                             </div>
-                                             <div className="comment-area mt-3">
-                                                <div className="d-flex justify-content-between align-items-center flex-wrap">
-                                                   <div className="like-block position-relative d-flex align-items-center">
-                                                      <div className="d-flex align-items-center">
-                                                         <div className="like-data">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle} >
-                                                                  <img loading="lazy" src={icon1} className="img-fluid" alt="" />
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu className=" py-2">
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Like</Tooltip>} className="ms-2 me-2" ><img loading="lazy" src={icon1} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Love</Tooltip>} className="me-2" ><img loading="lazy" src={icon2} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Happy</Tooltip>} className="me-2" ><img loading="lazy" src={icon3} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>HaHa</Tooltip>} className="me-2" ><img loading="lazy" src={icon4} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Think</Tooltip>} className="me-2" ><img loading="lazy" src={icon5} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Sade</Tooltip>} className="me-2" ><img loading="lazy" src={icon6} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                                  <OverlayTrigger placement="top" overlay={<Tooltip>Lovely</Tooltip>} className="me-2" ><img loading="lazy" src={icon7} className="img-fluid me-2" alt="" /></OverlayTrigger>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
-                                                         </div>
-                                                         <div className="total-like-block ms-2 me-3">
-                                                            <Dropdown>
-                                                               <Dropdown.Toggle as={CustomToggle} id="post-option" >
-                                                                  140 Likes
-                                                               </Dropdown.Toggle>
-                                                               <Dropdown.Menu>
-                                                                  <Dropdown.Item to="#">Max Emum</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
-                                                                  <Dropdown.Item to="#">Other</Dropdown.Item>
-                                                               </Dropdown.Menu>
-                                                            </Dropdown>
-                                                         </div>
-                                                      </div>
-                                                      <div className="total-comment-block">
-                                                         <Dropdown>
-                                                            <Dropdown.Toggle as={CustomToggle} id="post-option" >
-                                                               20 Comment
-                                                            </Dropdown.Toggle>
-                                                            <Dropdown.Menu>
-                                                               <Dropdown.Item to="#">Max Emum</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Bill Yerds</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Hap E. Birthday</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Tara Misu</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Midge Itz</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Sal Vidge</Dropdown.Item>
-                                                               <Dropdown.Item to="#">Other</Dropdown.Item>
-                                                            </Dropdown.Menu>
-                                                         </Dropdown>
-                                                      </div>
-                                                   </div>
-                                                   <ShareOffcanvas />
-                                                </div>
-                                                <hr />
-                                                <ul className="post-comments p-0 m-0">
-                                                   <li className="mb-2">
-                                                      <div className="d-flex flex-wrap">
-                                                         <div className="user-img">
-                                                            <img loading="lazy" src={user02} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                                         </div>
-                                                         <div className="comment-data-block ms-3">
-                                                            <h6>Monty Carlo</h6>
-                                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                                               <Link to="#">like</Link>
-                                                               <Link to="#">reply</Link>
-                                                               <Link to="#">translate</Link>
-                                                               <span> 5 min </span>
-                                                            </div>
-                                                         </div>
-                                                      </div>
-                                                   </li>
-                                                   <li>
-                                                      <div className="d-flex flex-wrap">
-                                                         <div className="user-img">
-                                                            <img loading="lazy" src={user03} alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                                         </div>
-                                                         <div className="comment-data-block ms-3">
-                                                            <h6>Paul Molive</h6>
-                                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                                               <Link to="#">like</Link>
-                                                               <Link to="#">reply</Link>
-                                                               <Link to="#">translate</Link>
-                                                               <span> 5 min </span>
-                                                            </div>
-                                                         </div>
-                                                      </div>
-                                                   </li>
-                                                </ul>
-                                                <form className="comment-text d-flex align-items-center mt-3" >
-                                                   <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
-                                                   <div className="comment-attagement d-flex">
-                                                      <Link to="#" className="material-symbols-outlined me-3 link">insert_link</Link>
-                                                      <Link to="#" className="material-symbols-outlined  me-3">sentiment_satisfied</Link>
-                                                      <Link to="#" className="material-symbols-outlined  me-3">photo_camera</Link>
-                                                   </div>
-                                                </form>
-                                             </div>
-                                          </div>
+
+                                             // <div key={post.id}>
+                                             //    <h2>{post.title}</h2>
+                                             //    <p>{post.body}</p>
+                                             // </div>
+                                          ))}
+                                      
                                        </Card.Body>
                                     </Card>
                                  </Col>

@@ -13,6 +13,8 @@ import Cookies from 'js-cookie'
 import ReactFsLightbox from 'fslightbox-react'
 import { getApiUrl, API_ENDPOINTS, API_KEY } from '../../../apiConfig';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 // images

@@ -172,7 +172,7 @@ const SignUp = () => {
                navigate('/auth/verify-otp');
             }
             if (response.data.status == 500) {
-               toast.error(response.data.Errors[0], {
+               toast.error(response.data.message, {
                   position: toast.POSITION.TOP_RIGHT
                });
             }

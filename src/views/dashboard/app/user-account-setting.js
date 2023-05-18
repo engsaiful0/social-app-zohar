@@ -27,7 +27,7 @@ const UserAccountSetting = () => {
     });
     const validateForm = async () => {
         try {
-            await validationSchema.validate(formData, { abortEarly: false });
+            await validationSchema.validate(formDataShow, { abortEarly: false });
             setFormErrors({}); // clear any previous errors
         } catch (err) {
             const errors = {};
@@ -47,9 +47,14 @@ const UserAccountSetting = () => {
     // get functions to build form with useForm() hook
     const { register, handleSubmit, reset, formState } = useForm(formOptions);
     const { errors } = formState;
-
-    const [formData, setFormData] = useState({
-        api_key: '',
+    const [formDataShow, setUserFormDataShow] = useState({
+        first_name: '',
+        last_name: '',
+        gender: '',
+        date_of_birth: '',
+        mobile: '',
+        nickname: '',
+        about: '',
         update_field: '',
         update_value: ''
     });
@@ -57,7 +62,7 @@ const UserAccountSetting = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prevState => ({ ...prevState, [name]: value }));
+        setUserFormDataShow(prevState => ({ ...prevState, [name]: value }));
         validateForm();
     }
 
@@ -66,12 +71,12 @@ const UserAccountSetting = () => {
     const onSubmit = (data) => {
         // e.preventDefault();
         const formDataObj = new FormData();
-        console.log(FormData);
+        console.log(formDataShow);
         formDataObj.append('api_key', API_KEY);
         formDataObj.append('token', token);
-        formDataObj.append('update_field', formData.update_field);
-        formDataObj.append('update_value', formData.update_value);
-    
+        formDataObj.append('update_field', formDataShow.update_field);
+        formDataObj.append('update_value', formDataShow.first_name);
+
         try {
             axios({
                 url: getApiUrl(API_ENDPOINTS.PROFILE_UPDATE),
@@ -85,7 +90,7 @@ const UserAccountSetting = () => {
                     toast.success(response.data.message, {
                         position: toast.POSITION.TOP_RIGHT
                     });
-                    setFormData({
+                    setUserFormDataShow({
                         api_key: '',
                         update_field: '',
                         update_value: ''
@@ -108,15 +113,9 @@ const UserAccountSetting = () => {
     };
 
     /*  Get User proifile data from here */
-    const [formDataShow, setUserFormDataShow] = useState({
-        first_name: '',
-        last_name: '',
-        gender: '',
-        date_of_birth: '',
-        mobile: '',
-        nickname: '',
-        about: '',
-      });
+   
+
+
     useEffect(() => {
         try {
             const formDataObj = new FormData();
@@ -131,7 +130,7 @@ const UserAccountSetting = () => {
                 const { first_name, last_name, gender, date_of_birth, mobile, nickname, about } = response.data.data;
                 setUserFormDataShow({ first_name, last_name, gender, date_of_birth, mobile, nickname, about });
                 console.log(date_of_birth.split(' '));
-            
+
                 //handle success
                 if (response.data.status == 200) {
                     //setUserData(response.data.data.first_name);
@@ -166,8 +165,8 @@ const UserAccountSetting = () => {
                                             <Row>
                                                 <Col lg="9" md="9" sm="9">
                                                     <Form.Control type="hidden" name="update_field" id="update_field" defaultValue="first_name" />
-                                                    <Form.Control {...register('update_value')} onChange={handleChange} type="text" value={formDataShow.first_name} className="form-control" placeholder='Enter First Name' name="update_value" id="update_value" />
-                                                    <div >{errors.update_value?.message}</div>
+                                                    <Form.Control {...register('first_name')} onChange={handleChange} type="text" value={formDataShow.first_name} className="form-control" placeholder='Enter First Name' name="first_name" id="first_name" />
+                                                    <div >{errors.first_name?.message}</div>
                                                 </Col>
                                                 <Col lg="2" md="2" sm="2">
                                                     <Button type="button" className="btn btn-primary me-2">Edit</Button>

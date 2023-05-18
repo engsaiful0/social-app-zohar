@@ -16,6 +16,7 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import Cookies from 'js-cookie';
 const SignUp = () => {
+   const [isLoading, setIsLoading] = useState(false);
    const navigate = useNavigate();
    const validateForm = async () => {
       try {
@@ -120,7 +121,7 @@ const SignUp = () => {
    const platform = navigator.userAgent.match(/(Android|iPhone|iPod|iPad|Windows Phone|Tablet|Windows|Macintosh)/i)[0];
 
    const onSubmit = (data) => {
-      // e.preventDefault();
+      setIsLoading(true);
       const formDataObj = new FormData();
       console.log(FormData);
       formDataObj.append('api_key', API_KEY);
@@ -176,6 +177,7 @@ const SignUp = () => {
                   position: toast.POSITION.TOP_RIGHT
                });
             }
+            setIsLoading(false);
          }).catch(function (response) {
             //handle error
             console.log(response);
@@ -284,7 +286,9 @@ const SignUp = () => {
                                  <Form.Check.Label>I accept <Link to="#">Terms and Conditions</Link></Form.Check.Label>
                                  <div >{errors.termsAndConditions?.message}</div>
                               </Form.Check>
-                              <Button type="submit" className="btn-primary float-end">Sign Up</Button>
+                              <Button disabled={isLoading} type="submit" className="btn-primary float-end">
+                                 {isLoading ? 'Signing Up...' : 'Sign Up'}
+                              </Button>
                            </div>
                            <div className="sign-info">
                               <span className="dark-color d-inline-block line-height-2">Already Have Account ? <Link to="/auth/sign-in">Log In</Link></span>
